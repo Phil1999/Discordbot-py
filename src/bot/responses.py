@@ -1,15 +1,22 @@
-# bot/responses.py
 from .commands import general
+import asyncio
 
-def handle_response(message) -> str:
-    p_message = message.lower()
+async def handle_response(message):
+    p_message = message.content.lower().strip()
 
     command_map = {
         'hello': general.hello,
         '!help': general.help,
+        '!image': general.send_image_url
     }
 
-    if p_message in command_map:
-        return command_map[p_message]()
+    command_func = command_map.get(p_message)
+
+    if command_func:
+        if asyncio.iscoroutinefunction(command_func):
+            return await command_func()
+        else:
+            return command_func()
     else:
-        return "Sorry, I didn't understand that command."
+        return "Sorry, I couldn't understand the command"
+    
