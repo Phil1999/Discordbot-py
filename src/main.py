@@ -1,8 +1,9 @@
-import bot, os
+import os
+from bot.core import init_discord_bot
 from dotenv import load_dotenv
 
 load_dotenv()
 
 if __name__ == '__main__':
     discord_token = os.getenv('DISCORD_TOKEN')
-    bot.init_discord_bot(discord_token)
+    init_discord_bot(discord_token)
