@@ -1,0 +1,10 @@
+# Environment vars
+.env
+
+# pycache
+__pycache__/
+
+# venv environments
+discbotenv/
+.venv
+venv/
