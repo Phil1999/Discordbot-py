@@ -14,3 +14,4 @@ async def send_image_url():
     embed.set_image(url="https://pngimg.com/uploads/spongebob/spongebob_PNG58.png")
 
     return embed
+

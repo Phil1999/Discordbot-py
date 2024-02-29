@@ -8,7 +8,7 @@ async def handle_response(message):
     command_map = {
         'hello': general.hello,
         'help': general.help,
-        'image': general.send_image_url
+        'image': general.send_image_url,
     }
 
     command_func = command_map.get(trimmed_message)
