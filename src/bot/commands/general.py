@@ -1,5 +1,5 @@
 import discord
-from utils.scraper.scraper import get_character_details
+from utils.scraper import get_character_details
 
 
 def hello():

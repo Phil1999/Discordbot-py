@@ -1,5 +1,6 @@
 from .commands import general
 import discord
+from .utils.bot import delete_sender_message
 
 def setup_bot(bot):
     @bot.command(name='hello')
