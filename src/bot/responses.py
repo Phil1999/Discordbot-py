@@ -1,23 +1,29 @@
 from .commands import general
-import asyncio
+import discord
 
-async def handle_response(message):
-    p_message = message.content.lower().strip()
-    trimmed_message = p_message[1:] # Remove the ! or ?
-
-    command_map = {
-        'hello': general.hello,
-        'help': general.help,
-        'image': general.send_image_url,
-    }
-
-    command_func = command_map.get(trimmed_message)
-
-    if command_func:
-        if asyncio.iscoroutinefunction(command_func):
-            return await command_func()
+def setup_bot(bot):
+    @bot.command(name='hello')
+    async def hello(ctx):
+        await ctx.send(general.hello())
+    
+    @bot.command(name='guide')
+    async def help(ctx):
+        await ctx.send(general.help())
+    
+    @bot.command(name='image')
+    async def image(ctx):
+        embed = await general.send_image_url()
+        await ctx.send(embed=embed)
+    
+    @bot.command(name='mrx')
+    async def mrx(ctx, *, username: str = None):
+        result = await general.send_character_image_url(username)
+        
+        if isinstance(result, str):
+            await ctx.send(result)
+        elif isinstance(result, discord.Embed):
+            await ctx.send(embed=result)
         else:
-            return command_func()
-    else:
-        return "Sorry, I couldn't understand the command"
+            command_name = ctx.command.name
+            await ctx.send(f"Unexpected error occurred when running `{command_name}`.")
     
