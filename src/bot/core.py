@@ -26,11 +26,14 @@ async def on_message(message):
     if message.author == client.user:
         return
     
+
     if message.content.startswith('!'):
-        await send_message(message, is_private=False)
+        is_private=False
+        await send_message(message, is_private=is_private)
 
     elif message.content.startswith('?'):
-        await send_message(message, is_private=True)
+        is_private=True
+        await send_message(message, is_private=is_private)
 
 def init_discord_bot(token):
     client.run(token)
