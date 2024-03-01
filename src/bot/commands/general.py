@@ -24,7 +24,7 @@ async def send_character_image_url(username):
 
     character_details = get_character_details(username)
 
-    if not character_details['found']:
+    if character_details['found'] is not True:
         return "We couldn't find that character.", None
     
     file = discord.File(f'utils\images\graph.png', filename = 'graph.png')
