@@ -14,15 +14,15 @@ def get_character_details(username):
         'image_url'         : None,
         'class_and_world'   : None,
         'level_percentage'  : None,
-        'found'             : False,
+        'found'             : False # It's important that we start as false. There are cases where we get something other than a response 200.
     }
 
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        didnt_find_character_tag = soup.select_one('#content h2')
-
-        if didnt_find_character_tag and not didnt_find_character_tag.text == "Not Found":
+        not_found_tag = soup.select_one('#content h2')
+        
+        if not_found_tag and not not_found_tag.text == "Not Found":
             character_details['found'] = True
         
         img_selector = 'img.card-img-top'
