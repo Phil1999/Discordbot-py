@@ -14,7 +14,7 @@ def get_character_details(username):
         'image_url'         : None,
         'class_and_world'   : None,
         'level_percentage'  : None,
-        'found'             : True,
+        'found'             : False,
     }
 
     if response.status_code == 200:
@@ -22,10 +22,9 @@ def get_character_details(username):
 
         didnt_find_character_tag = soup.select_one('#content h2')
 
-        if didnt_find_character_tag and "Not Found" in didnt_find_character_tag.text:
-            character_details['found'] = False
-            return character_details
-
+        if not didnt_find_character_tag == "Not Found":
+            character_details['found'] = True
+            
         image_tag = soup.select_one('img.card-img-top')
         level_tag = soup.select_one('h5.card-text')
         class_world_tag = soup.select_one('p.card-text')
