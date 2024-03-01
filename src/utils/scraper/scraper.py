@@ -22,13 +22,18 @@ def get_character_details(username):
 
         didnt_find_character_tag = soup.select_one('#content h2')
 
-        if not didnt_find_character_tag == "Not Found":
+        if didnt_find_character_tag and not didnt_find_character_tag.text == "Not Found":
             character_details['found'] = True
-            
-        image_tag = soup.select_one('img.card-img-top')
-        level_tag = soup.select_one('h5.card-text')
-        class_world_tag = soup.select_one('p.card-text')
-        name_tag = soup.select_one('h3.card-title')
+        
+        img_selector = 'img.card-img-top'
+        level_selector = 'h5.card-text'
+        class_world_selector = 'p.card-text'
+        name_selector = 'h3.card-title'
+
+        image_tag = soup.select_one(img_selector)
+        level_tag = soup.select_one(level_selector)
+        class_world_tag = soup.select_one(class_world_selector)
+        name_tag = soup.select_one(name_selector)
 
 
         if image_tag:
