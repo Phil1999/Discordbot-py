@@ -20,19 +20,20 @@ async def send_image_url():
 async def send_character_image_url(username):
 
     if username is None:
-        return "Please provide a username. Usage: `!mrx <username>`"
+        return "Please provide a username. Usage: `!mrx <username>`", None
 
     character_details = get_character_details(username)
 
     if not character_details['found']:
-        return "We couldn't find that character."
+        return "We couldn't find that character.", None
     
+    file = discord.File(f'utils\images\graph.png', filename = 'graph.png')
     embed = discord.Embed()
     title = f"{character_details['name']}"
 
     embed.title = title
     embed.set_thumbnail(url=character_details['image_url'])
-    embed.set_image(url="https://pngimg.com/uploads/spongebob/spongebob_PNG58.png")
+    embed.set_image(url = 'attachment://graph.png')
     embed.description = f"{character_details.get('level_percentage')} {character_details.get('class_and_world')}"
 
-    return embed
+    return embed, file
