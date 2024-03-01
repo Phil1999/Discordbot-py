@@ -27,15 +27,11 @@ def setup_bot(bot):
         if isinstance(result, str):
             await ctx.send(result)
             return
-
+    
         if isinstance(result, discord.Embed):
             # Check if a file was also returned
             if file is not None:
                 await ctx.send(file=file, embed=result)  # Send both file and embed
             else:
                 await ctx.send(embed=result)  # Send only embed if no file is present
-        else:
-            # Handle unexpected cases
-            command_name = ctx.command.name
-            await ctx.send(f"Unexpected error occurred when running {command_name}.")
     
