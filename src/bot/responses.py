@@ -21,8 +21,10 @@ def setup_bot(bot):
     
     @bot.command(name='mrx')
     @delete_invoke_message
-    async def mrx(ctx, *, username: str = None):
-        result, file = await general.send_character_image_url(username)
+    async def mrx(ctx, *usernames: str):
+
+        print(usernames) 
+        result, file = await general.send_character_image_url(usernames)
 
         if isinstance(result, str):
             await ctx.send(result)

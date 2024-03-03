@@ -12,8 +12,6 @@ def get_character_details(username):
     character_details = {
         'name'              : None,
         'image_url'         : None,
-        'class_and_world'   : None,
-        'level_percentage'  : None,
         'found'             : False
     }
 
@@ -28,25 +26,15 @@ def get_character_details(username):
         character_details['found'] = True
 
         img_selector = 'img.card-img-top'
-        level_selector = 'h5.card-text'
-        class_world_selector = 'p.card-text'
         name_selector = 'h3.card-title'
 
         image_tag = soup.select_one(img_selector)
-        level_tag = soup.select_one(level_selector)
-        class_world_tag = soup.select_one(class_world_selector)
         name_tag = soup.select_one(name_selector)
 
 
         if image_tag:
             character_details['image_url'] = image_tag['src']
             
-        if level_tag:
-            character_details['level_percentage'] = level_tag.text
-        
-        if class_world_tag:
-            character_details['class_and_world'] = class_world_tag.text
-
         if name_tag:
             character_details['name'] = name_tag.text
      
