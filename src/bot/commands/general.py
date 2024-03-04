@@ -31,7 +31,6 @@ async def send_character_image_url(usernames):
 
     character_details = get_character_details(usernames[0])
 
-    # From here, we manipulate an image
     userGraph(get_data(), usernames)
 
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
@@ -39,7 +38,6 @@ async def send_character_image_url(usernames):
     title = f"{character_details['name']}"
 
     embed.title = title
-
 
     if NUM_USERS == 1:
         embed.set_thumbnail(url= f'{character_details['image_url']}')
