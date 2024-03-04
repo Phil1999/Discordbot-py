@@ -9,6 +9,7 @@ import numpy as np
 import gspread
 import os
 import math
+import statistics
 
 def update_data():
     gc = gspread.service_account()
@@ -108,7 +109,6 @@ def userGraph(df, users):
     n_shades = 10
     diff_linewidth = 1.05
     alpha_value = 0.3 / n_shades
-    titlestr = ''
 
     fig, ax = plt.subplots()
     for i, user in enumerate(user_list):
@@ -123,13 +123,6 @@ def userGraph(df, users):
             
         # add colour underneath line
         ax.fill_between(date, 0, u, alpha = 0.1, color = colors[i])
-
-        # determine the title
-        if (i+1) < num_users:
-            s = user + ' vs. '
-            titlestr += s
-        else:
-            titlestr += user
 
     # grid colour
     ax.grid(color='#2A3459')
@@ -148,7 +141,7 @@ def userGraph(df, users):
     ax.legend(fancybox = True, framealpha=1, facecolor = '#212946', labelcolor = 'white')
 
     # set title and y label
-    ax.set_title(titlestr)
+    ax.set_title('Culvert Scores')
     ax.set_ylabel('Score')
 
     # make graph slightly wider
@@ -162,3 +155,32 @@ def userGraph(df, users):
         
     plt.savefig(f'{imgdir}/graph.png')
     plt.close(fig)
+
+def stats(df, user):
+   # Convert user input to lowercase
+    user = user.lower()
+
+    # Get the existing names in our database
+    names = list(df.columns.values)[1:]
+
+    for n in names:
+        if n.lower() == user:
+            userDF = pd.DataFrame(df.copy(), columns = ['Date', user])
+            userDF = userDF.replace('', 0)
+
+    numZeros = userDF[user][userDF[user] == 0].count()
+    ptcp = round((userDF.shape[0]-numZeros) / userDF.shape[0] * 100,0)
+
+    scores = userDF[user].tolist()
+    minScore = min(scores)
+    maxScore = max(scores)
+    meanScore = statistics.mean(scores)
+    medianScore = statistics.median(scores)
+
+    user_dict = {}
+    user_dict['min'] = minScore
+    user_dict['max'] = maxScore
+    user_dict['mean'] = meanScore
+    user_dict['ptcp'] = ptcp
+    user_dict['median'] = medianScore
+    

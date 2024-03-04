@@ -40,9 +40,10 @@ async def send_character_image_url(usernames):
 
     embed.title = title
 
-    # For thumbnail, use the composite image
-    embed.set_thumbnail(url= f'{character_details['image_url']}')
-    # TODO: for more than 1 person we don't display a thumbnail.
+
+    if NUM_USERS == 1:
+        embed.set_thumbnail(url= f'{character_details['image_url']}')
+
     embed.set_image(url = 'attachment://graph.png')
     embed.description = "Placeholder text"
     
