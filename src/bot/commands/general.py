@@ -1,6 +1,6 @@
 import discord
 from utils.scraper import get_character_details
-
+from utils.plot import *
 
 def hello():
     return "Hello World"
@@ -38,8 +38,9 @@ async def send_character_image_url(usernames):
         character_details.append(curr_details)
     
     # From here, we manipulate an image
+    userGraph(get_data(), usernames)
 
-    file = discord.File(f'utils\images\graph.png', filename = 'graph.png')
+    file = discord.File(f'assets\images\graph.png', filename = 'graph.png')
     embed = discord.Embed()
     title = f"{character_details[0]['name']}"
 
