@@ -45,5 +45,5 @@ async def send_character_image_url(usernames):
         embed.set_image(url = 'attachment://graph.png')
         embed.description = "Placeholder text"
         return embed, file
-    elif NUM_USERS > MIN_USERS AND NUM_USERS <= MAX_USERS:
+    elif NUM_USERS > MIN_USERS and NUM_USERS <= MAX_USERS:
         return file
