@@ -34,16 +34,16 @@ async def send_character_image_url(usernames):
     userGraph(get_data(), usernames)
 
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
-    embed = discord.Embed()
-    title = f"{character_details['name']}"
-
-    embed.title = title
+   
 
     if NUM_USERS == 1:
+        embed = discord.Embed()
+        title = f"{character_details['name']}"
+        embed.title = title
         embed.set_thumbnail(url= f'{character_details['image_url']}')
 
         embed.set_image(url = 'attachment://graph.png')
         embed.description = "Placeholder text"
         return embed, file
-    elif NUM_USERS > MIN_USERS and NUM_USERS <= MAX_USERS:
-        return file
+    else
+        return None, file
