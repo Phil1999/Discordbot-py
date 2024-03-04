@@ -23,11 +23,16 @@ def setup_bot(bot):
     @delete_invoke_message
     async def mrx(ctx, *usernames: str):
 
-        print(usernames) 
         result, file = await general.send_character_image_url(usernames)
 
         if isinstance(result, str):
             await ctx.send(result)
+            return
+        
+        # If only the file was sent that means we have more than one username
+        # and we only want to send the image
+        if isinstance(result, discord.File):
+            await ctx.send(file=file)
             return
     
         if isinstance(result, discord.Embed):
