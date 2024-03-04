@@ -28,6 +28,12 @@ def setup_bot(bot):
         if isinstance(result, str):
             await ctx.send(result)
             return
+        
+        # If only the file was sent that means we have more than one username
+        # and we only want to send the image
+        if isinstance(result, discord.File):
+            await ctx.send(file=file)
+            return
     
         if isinstance(result, discord.Embed):
             # Check if a file was also returned

@@ -42,7 +42,8 @@ async def send_character_image_url(usernames):
     if NUM_USERS == 1:
         embed.set_thumbnail(url= f'{character_details['image_url']}')
 
-    embed.set_image(url = 'attachment://graph.png')
-    embed.description = "Placeholder text"
-    
-    return embed, file
+        embed.set_image(url = 'attachment://graph.png')
+        embed.description = "Placeholder text"
+        return embed, file
+    elif NUM_USERS > MIN_USERS AND NUM_USERS <= MAX_USERS:
+        return file
