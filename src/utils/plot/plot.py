@@ -48,7 +48,7 @@ def get_data():
 
 def xLabelTicks(df):
     today = str(date.today())
-    df = df[(df['Date'] <= today)]
+    df = df.loc[(df['Date'] <= today)]
     dates = df['Date'].tolist()
     length = len(dates)
     step = math.ceil(length/8)
@@ -58,7 +58,7 @@ def xLabelTicks(df):
     else:
         return dates
     
-def userGraph(df, users):
+def comparison(df, users):
     # Convert user input to lowercase
     users = [x.lower() for x in users]
 
@@ -88,7 +88,6 @@ def userGraph(df, users):
     # Create our dataframe
     userDF = pd.DataFrame(df.copy(), columns = ['Date'] + user_list)
     userDF = userDF.replace('', 0)
-    
     date = userDF['Date']
 
     # Get the right x tick labels so it's not overcrowded
@@ -145,7 +144,7 @@ def userGraph(df, users):
     ax.set_ylabel('Score')
 
     # make graph slightly wider
-    fig.set_figwidth(7)
+    fig.set_figwidth(7.5)
 
     # save graph
     imgdir = 'assets/images'
@@ -172,6 +171,7 @@ def stats(df, user):
     ptcp = round((userDF.shape[0]-numZeros) / userDF.shape[0] * 100,0)
 
     scores = userDF[user].tolist()
+    scores = [x for x in scores if x != 0]
     minScore = min(scores)
     maxScore = max(scores)
     meanScore = statistics.mean(scores)
@@ -183,4 +183,80 @@ def stats(df, user):
     user_dict['mean'] = meanScore
     user_dict['ptcp'] = ptcp
     user_dict['median'] = medianScore
+    return user_dict
     
+def userGraph(df, user):
+   # Convert user input to lowercase
+    user = user.lower()
+
+    # Get the existing names in our database
+    names = list(df.columns.values)[1:]
+
+    for n in names:
+        if n.lower() == user:
+            userDF = pd.DataFrame(df.copy(), columns = ['Date', user])
+            userDF = userDF.replace('', 0)
+
+    # Get the right x tick labels so it's not overcrowded
+    xtick = xLabelTicks(userDF)
+
+    plt.style.use("dark_background")
+    for param in ['text.color', 'axes.labelcolor', 'xtick.color', 'ytick.color']:
+        plt.rcParams[param] = '0.9'  # very light grey
+    for param in ['figure.facecolor', 'axes.facecolor', 'savefig.facecolor']:
+        plt.rcParams[param] = '#212946'  # bluish dark grey
+    colors = [
+    '#08F7FE',  # teal/cyan
+    '#FE53BB',  # pink
+    '#F5D300',  # yellow
+    '#00ff41',  # matrix green
+    ]
+
+    n_shades = 10
+    diff_linewidth = 1.05
+    alpha_value = 0.3 / n_shades
+
+    fig, ax = plt.subplots()
+
+    u = userDF[user]
+    # plot initial line for each user
+    ax.plot(date, u, color = colors[0], marker = 'o', linewidth = 0.8, label = user)
+
+    # add glow effect to each line
+
+    ax.plot(date, u, color = colors[0], linewidth=2+(diff_linewidth*n),alpha = alpha_value)
+            
+    # add colour underneath line
+    ax.fill_between(date, 0, u, alpha = 0.1, color = colors[0])
+
+    # grid colour
+    ax.grid(color='#2A3459')
+
+    # Border (spines) set to invisible
+    ax.spines['top'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    # set x tick labels
+    ax.set_xticks(xtick)
+    ax.set_xticklabels(xtick, rotation = 30)
+
+    # set legends equal to labels
+    ax.legend(fancybox = True, framealpha=1, facecolor = '#212946', labelcolor = 'white')
+
+    # set title and y label
+    ax.set_title('Culvert Scores')
+    ax.set_ylabel('Score')
+
+    # make graph slightly wider
+    fig.set_figwidth(7.5)
+
+    # save graph
+    imgdir = 'assets/images'
+    if not os.path.exists(imgdir):
+        os.makedirs(imgdir)
+    plt.tight_layout()
+        
+    plt.savefig(f'{imgdir}/graph.png')
+    plt.close(fig)
