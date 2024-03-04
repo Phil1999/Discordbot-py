@@ -29,21 +29,51 @@ async def send_character_image_url(usernames):
     if not valid_params:
         return f"Please provide at least {MIN_USERS} username and up to {MAX_USERS} maximum. Usage: `!mrx <username> ...`", None
 
-    character_details = get_character_details(usernames[0])
-
-    userGraph(get_data(), usernames)
-
+    comparison(get_data(), usernames)
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
-    embed = discord.Embed()
-    title = f"{character_details['name']}"
-
-    embed.title = title
 
     if NUM_USERS == 1:
-        embed.set_thumbnail(url= f'{character_details['image_url']}')
+        character_details = get_character_details(usernames[0])
+        embed = discord.Embed()
+        title = f"{character_details['name']}"
+        embed.title = title
+        embed.set_thumbnail(url=character_details['image_url'])
 
+        stat_dict = stats(get_data(), usernames[0])
+
+        percent = float(str(stat_dict['ptcp']).replace('%',''))
+        if percent == 100.0:
+            padding = 28
+        elif percent > 9.99:
+            padding = 27
+        else:
+            padding = 25
+        print(padding)
+        line = '-' * padding
+        des = (
+            line + '\n' + 
+            'Participation Rate: ' + str(stat_dict['ptcp']) + '%' + '\n' + 
+            'Min: ' + str(stat_dict['min']) + '\n' + 
+            'Average: ' + str(stat_dict['mean']) + '\n' + 
+            'Max: ' + str(stat_dict['max']) + '\n' + 
+            line
+        )
+        embed.description = des
         embed.set_image(url = 'attachment://graph.png')
-        embed.description = "Placeholder text"
         return embed, file
-    elif NUM_USERS > MIN_USERS and NUM_USERS <= MAX_USERS:
-        return file
+    else:
+        return None, file
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+    
+    return embed, file
+   

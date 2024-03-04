@@ -9,3 +9,5 @@ discbotenv/
 .venv
 venv/
 myenv/
+
+*.png
