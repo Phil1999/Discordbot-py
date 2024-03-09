@@ -16,7 +16,7 @@ def setup_bot(bot):
         embed = await general.send_image_url()
         await ctx.send(embed=embed)
     
-    @bot.command(name='mrx')
+    @bot.command(name='gpq')
     async def mrx(ctx, *usernames: str):
         result, file = await general.send_character_image_url(usernames)
 

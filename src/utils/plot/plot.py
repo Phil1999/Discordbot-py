@@ -161,14 +161,15 @@ def comparison(df, users):
 
     # set x tick labels
     ax.set_xticks(xtick)
-    ax.set_xticklabels(xtick, rotation = 30)
+    ax.set_xticklabels(xtick, rotation = 30, fontsize = 13)
 
     # set legends equal to labels
     ax.legend(fancybox = True, framealpha=1, facecolor = '#212946', labelcolor = 'white')
 
     # set title and y label
-    ax.set_title('Culvert Scores')
+    ax.set_title('GPQ Scores')
     ax.set_ylabel('Score')
+    
 
     # make graph slightly wider
     if num_users > 1:
