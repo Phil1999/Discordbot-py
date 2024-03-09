@@ -20,22 +20,48 @@ def update_data():
     dat = wks.get_all_records()
     date = dat[0]['Date']
 
+    input_names = {}
+    for col in dat:
+        name = col['Name']
+        score = col['Score']
+        input_names[name] = score
+    names_lower = {k.lower(): v for k, v in input_names.items()}
+
     # Data sheet
-    wks2 = sh.worksheet('Main Data')
+    wks2 = sh.worksheet('temp')
     df = pd.DataFrame(wks2.get_all_records())
-    cn = list(df.columns.values)[1:]
-    current_names = [x.lower() for x in cn]
+    current_names = list(df.columns.values)[1:]
+
 
     # If date does not exist, add it to main sheet
-    if (df['Date'] != date).any():
+    if date not in df['Date'].values:
        df.loc[-1] = date
 
+    # loop through every name in current database
+    for name in current_names:
+        name_lower = name.lower()
+        # if name in database is equal to input list, update the score
+        if name_lower in names_lower:
+            df.loc[df['Date'] == date, name] = input_names[name]
+        # otherwise, the user exists but has not ran, update score to 0
+        else:
+            df.loc[df['Date'] == date, name] = 0
+    # Write these changes
+    wks2.update([df.columns.values.tolist()] + df.values.tolist())
+
+    # now that changes are written, pull data into dataframe again
+    # we will now iterate of the input names to check for new users
+
+    df = pd.DataFrame(wks2.get_all_records())
+    updated_names = list(df.columns.values)[1:]
+
+    un_lower = [x.lower() for x in updated_names]
     for user in dat:
         name = user['Name']
         score = user['Score']
-        if name.lower() not in current_names:
-            df[name] = 0
-        df.loc[df['Date'] == date, name] = score
+        if name.lower() not in un_lower:
+            df[name] = '-'
+            df.loc[df['Date'] == date, name] = score
 
     wks2.update([df.columns.values.tolist()] + df.values.tolist())
 
@@ -88,6 +114,7 @@ def comparison(df, users):
     # Create our dataframe
     userDF = pd.DataFrame(df.copy(), columns = ['Date'] + user_list)
     userDF = userDF.replace('', 0)
+    userDF = userDF.replace(0, np.NAN)
     date = userDF['Date']
 
     # Get the right x tick labels so it's not overcrowded
@@ -113,7 +140,7 @@ def comparison(df, users):
     for i, user in enumerate(user_list):
         u = userDF[user]
         # plot initial line for each user
-        ax.plot(date, u, color = colors[i], marker = 'o', linewidth = 0.8, label = user)
+        ax.plot(date, u, color = colors[i], marker = 'none', linewidth = 1.7, label = user)
 
         # add glow effect to each line
         for n in range(1, n_shades+1):
@@ -144,7 +171,10 @@ def comparison(df, users):
     ax.set_ylabel('Score')
 
     # make graph slightly wider
-    fig.set_figwidth(7.5)
+    if num_users > 1:
+        fig.set_figwidth(12.5)
+    else:
+        fig.set_figwidth(7.5)
 
     # save graph
     imgdir = 'assets/images'
@@ -166,12 +196,16 @@ def stats(df, user):
         if n.lower() == user:
             name = n
             userDF = pd.DataFrame(df.copy(), columns = ['Date', name])
-            userDF = userDF.replace('', 0)
+            break
+    
+    scores = userDF[name].tolist()
+    
+
+    scores = [x for x in scores if x != '-']
 
     numZeros = userDF[name][userDF[name] == 0].count()
-    ptcp = round((userDF.shape[0]-numZeros) / userDF.shape[0] * 100,0)
+    ptcp = round((len(scores)-numZeros) / len(scores) * 100,0)
 
-    scores = userDF[name].tolist()
     scores = [x for x in scores if x != 0]
 
     minScore = min(scores)
@@ -188,6 +222,23 @@ def stats(df, user):
     user_dict['min'] = minScore_formatted
     user_dict['max'] = maxScore_formatted
     user_dict['mean'] = meanScore_formatted
-    user_dict['ptcp'] = ptcp
+    user_dict['ptcp'] = str(ptcp) + '%'
     user_dict['median'] = medianScore_formatted
+
+    rank, num_participants = userRank(df.copy(), name)
+    user_dict['rank'] = rank
+    user_dict['numptcp'] = num_participants
+
     return user_dict
+
+def userRank(df, user):
+    # get rank this week - start by getting last row of dataset
+    ranks_df = df.T.iloc[:,-1:].reset_index()
+    ranks_df = ranks_df.drop([0])
+    ranks_df = ranks_df.replace('-', 0)
+    mask = ranks_df.iloc[:,1] == 0
+    ranks_df = ranks_df[~mask]
+    num_participants = df.shape[0]
+
+    ranks_df['Rank'] = ranks_df.iloc[:,1].rank(method = 'max', ascending = False)
+    return(int(ranks_df.loc[ranks_df.iloc[:,0] == user]['Rank'].tolist()[0]), num_participants)
