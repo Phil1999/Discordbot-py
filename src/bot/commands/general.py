@@ -40,25 +40,31 @@ async def send_character_image_url(usernames):
         embed.set_thumbnail(url=character_details['image_url'])
 
         stat_dict = stats(get_data(), usernames[0])
-
-        percent = float(str(stat_dict['ptcp']).replace('%',''))
-        if percent == 100.0:
-            padding = 28
-        elif percent > 9.99:
-            padding = 27
-        else:
-            padding = 25
-        print(padding)
-        line = '-' * padding
-        des = (
-            line + '\n' + 
-            'Participation Rate: ' + str(stat_dict['ptcp']) + '%' + '\n' + 
-            'Min: ' + str(stat_dict['min']) + '\n' + 
-            'Average: ' + str(stat_dict['mean']) + '\n' + 
-            'Max: ' + str(stat_dict['max']) + '\n' + 
-            line
-        )
-        embed.description = des
+        print(stat_dict)
+        #percent = float(str(stat_dict['ptcp']).replace('%',''))
+        #if percent == 100.0:
+        #    padding = 28
+        #elif percent > 9.99:
+        #    padding = 27
+        #else:
+        #    padding = 25
+        #print(padding)
+        #line = '-' * padding
+        #des = (
+        #    line + '\n' + 
+        #    'Participation Rate: ' + str(stat_dict['ptcp']) + '%' + '\n' + 
+        #    'Min: ' + str(stat_dict['min']) + '\n' + 
+        #    'Average: ' + str(stat_dict['mean']) + '\n' + 
+        #    'Max: ' + str(stat_dict['max']) + '\n' + 
+        #    line
+        #)
+        embed.description = 'Level 285 Luminous'
+        embed.set_footer(text='Rank #' + str(stat_dict['rank']) + '/' + str(stat_dict['numptcp']) + ' in most recent week')
+        embed.add_field(name='Participation rate', value = stat_dict['ptcp'], inline = False)
+        #embed.add_field(name='Rank (Most recent)', value = stat_dict['rank'], inline = False)
+        embed.add_field(name='Min', value = stat_dict['min'], inline = True)
+        embed.add_field(name='Average', value = stat_dict['mean'], inline = True)
+        embed.add_field(name='Max', value = stat_dict['max'], inline = True)
         embed.set_image(url = 'attachment://graph.png')
         return embed, file
     else:
