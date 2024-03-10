@@ -6,27 +6,23 @@ from discord import app_commands
 from utils.decorators import delete_invoke_message
 
 def setup_bot(bot):
-    guild_id = 1212500695719223367
-
-    @bot.tree.command(name='help', description='shows a list of commands', guild=discord.Object(id=guild_id))
+    @bot.tree.command(name='help', description='Shows a list of commands')
     async def hello(interaction: discord.Interaction):
         embed = general.help()
         await interaction.response.send_message(embed=embed)
       
        
-    @bot.tree.command(name="gpq", description="Testing", guild=discord.Object(id=guild_id))
-    @app_commands.describe(usernames='list of usernames to query (max=4).')
+    @bot.tree.command(name="gpq", description="Check culvert scores")
+    @app_commands.describe(users='List of users to query (max=4).', num_weeks='Optional: The last (num) weeks of scores')
     @app_commands.choices(num_weeks=[])
-    async def gpq(interaction: discord.Interaction, usernames: str, num_weeks: int = None):
+    async def gpq(interaction: discord.Interaction, users: str, num_weeks: int = None):
         try:  
             await interaction.response.defer()
 
-            async def command_logic():
-                usernames_list = usernames.split(' ')
-                return await general.send_character_image_url(usernames_list, num_weeks)
+            usernames_list = users.split(' ')
+            result, file = await general.send_character_image_url(usernames_list, num_weeks)
 
-            result, file = await asyncio.wait_for(command_logic(), timeout=15)
-
+            
             # Now, respond using follow-up for all scenarios.
             if isinstance(result, str):
                 # If the result is a simple message.
@@ -40,6 +36,5 @@ def setup_bot(bot):
                     await interaction.followup.send(file=file, embed=result)
                 else:
                     await interaction.followup.send(embed=result)
-        except asyncio.TimeoutError:
-            # Handle the case where the command_logic takes too long.
-            await interaction.followup.send("Sorry, the command took too long to process.")
+        except Exception as e:
+                await interaction.followup.send("Sorry, something went wrong.")
