@@ -28,7 +28,7 @@ def update_data():
     names_lower = {k.lower(): v for k, v in input_names.items()}
 
     # Data sheet
-    wks2 = sh.worksheet('temp')
+    wks2 = sh.worksheet('Input')
     df = pd.DataFrame(wks2.get_all_records())
     current_names = list(df.columns.values)[1:]
 
