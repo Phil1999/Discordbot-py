@@ -2,20 +2,29 @@ import discord
 from utils.scraper import get_character_details
 from utils.plot import *
 
-def hello():
-    return "Hello World"
+
+embed_side_color = discord.Color.blue() 
 
 def help():
-    return "Help message..."
+    embed = discord.Embed()
+    embed.color = embed_side_color 
+    embed.title = "*Commands*"
+    embed.set_footer(text= "Schulich Bot")
+    embed.add_field(name="Schulich Help", value="\n`/help` \n" +
+                                 "Shows this message.\n\n", inline=False)
+    embed.add_field(
+    name="Culvert",
+    value=(
+        "\n`/gpq [names], optional 'num_weeks (num)'` \n"
+        "Enter a **single** username to receive an image of their Culvert score.\n"
+        "For **2-4** usernames, you will receive a comparative graph image against all listed players.\n"
+        "Enter the optional param `num_weeks` to show the last **'num'** weeks of culvert scores. \n\n"
+        "*Note: A maximum of **4** usernames can be entered.*\n\n"
+        ),
+    inline=False)
 
-async def send_image_url():
-    embed = discord.Embed(
-        title="Test Image",
-        description="This is a test image",
-    )
-    embed.set_image(url="https://pngimg.com/uploads/spongebob/spongebob_PNG58.png")
+    return embed;
 
-    return embed
 
 async def send_character_image_url(usernames):
     
@@ -28,7 +37,6 @@ async def send_character_image_url(usernames):
     
     if not valid_params:
         return f"Please provide at least {MIN_USERS} username and up to {MAX_USERS} maximum. Usage: `!gpq <username> ...`", None
-
     
     comparison(get_data(), usernames)
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
@@ -40,6 +48,7 @@ async def send_character_image_url(usernames):
 
         print(character_details)
         embed = discord.Embed()
+        embed.color = embed_side_color
         title = f"{character_details['name']}"
         embed.title = title
         embed.set_thumbnail(url=character_details['image_url'])

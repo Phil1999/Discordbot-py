@@ -8,9 +8,10 @@ from utils.decorators import delete_invoke_message
 def setup_bot(bot):
     guild_id = 1212500695719223367
 
-    @bot.tree.command(name='help', description='help command')
+    @bot.tree.command(name='help', description='shows a list of commands', guild=discord.Object(id=guild_id))
     async def hello(interaction: discord.Interaction):
-        await interaction.response.send_message(general.help())
+        embed = general.help()
+        await interaction.response.send_message(embed=embed)
       
        
     @bot.tree.command(name="gpq", description="Testing", guild=discord.Object(id=guild_id))
@@ -18,7 +19,7 @@ def setup_bot(bot):
     @app_commands.choices(num_weeks=[
         discord.app_commands.Choice(name='num_weeks', value=1)
     ])
-    async def gpq(interaction: discord.Interaction, usernames: str, num_weeks: int):
+    async def gpq(interaction: discord.Interaction, usernames: str, num_weeks: int = None):
         try:  
             await interaction.response.defer()
 
