@@ -27,13 +27,17 @@ async def send_character_image_url(usernames):
     valid_params = usernames and MIN_USERS <= len(usernames) <= MAX_USERS
     
     if not valid_params:
-        return f"Please provide at least {MIN_USERS} username and up to {MAX_USERS} maximum. Usage: `!mrx <username> ...`", None
+        return f"Please provide at least {MIN_USERS} username and up to {MAX_USERS} maximum. Usage: `!gpq <username> ...`", None
 
+    
     comparison(get_data(), usernames)
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
 
     if NUM_USERS == 1:
         character_details = get_character_details(usernames[0])
+        if character_details['found'] is not True:
+            return "The user you entered couldn't be found", None
+
         print(character_details)
         embed = discord.Embed()
         title = f"{character_details['name']}"
