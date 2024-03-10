@@ -23,7 +23,7 @@ def setup_bot(bot):
 
             async def command_logic():
                 usernames_list = usernames.split(' ')
-                return await general.send_character_image_url(usernames_list)
+                return await general.send_character_image_url(usernames_list, num_weeks)
 
             result, file = await asyncio.wait_for(command_logic(), timeout=15)
 

@@ -26,7 +26,7 @@ def help():
     return embed;
 
 
-async def send_character_image_url(usernames):
+async def send_character_image_url(usernames, num_weeks):
     
     NUM_USERS = len(usernames)
 
@@ -38,15 +38,20 @@ async def send_character_image_url(usernames):
     if not valid_params:
         return f"Please provide at least {MIN_USERS} username and up to {MAX_USERS} maximum. Usage: `!gpq <username> ...`", None
     
-    comparison(get_data(), usernames)
+    if num_weeks is not None:
+        if type(num_weeks) != int or num_weeks < 1:
+            return "Number of weeks must be a postive integer", None
+        else:
+            comparison(get_data(), usernames, num_weeks)
+    else:
+        comparison(get_data(), usernames, None)
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
 
     if NUM_USERS == 1:
         character_details = get_character_details(usernames[0])
         if character_details['found'] is not True:
             return "The user you entered couldn't be found", None
-
-        print(character_details)
+        
         embed = discord.Embed()
         embed.color = embed_side_color
         title = f"{character_details['name']}"

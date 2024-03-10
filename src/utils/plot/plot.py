@@ -84,7 +84,7 @@ def xLabelTicks(df):
     else:
         return dates
     
-def comparison(df, users):
+def comparison(df, users, num_weeks):
     # Convert user input to lowercase
     users = [x.lower() for x in users]
 
@@ -115,6 +115,11 @@ def comparison(df, users):
     userDF = pd.DataFrame(df.copy(), columns = ['Date'] + user_list)
     userDF = userDF.replace('', 0)
     userDF = userDF.replace(0, np.NAN)
+    
+    # If user wants last n weeks
+    if num_weeks is not None:
+        userDF = userDF.iloc[-num_weeks:]
+
     date = userDF['Date']
 
     # Get the right x tick labels so it's not overcrowded
@@ -173,7 +178,7 @@ def comparison(df, users):
 
     # make graph slightly wider
     if num_users > 1:
-        fig.set_figwidth(12.5)
+        fig.set_figwidth(12)
     else:
         fig.set_figwidth(7.5)
 
