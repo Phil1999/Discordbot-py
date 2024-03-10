@@ -15,7 +15,10 @@ def setup_bot(bot):
        
     @bot.tree.command(name="gpq", description="Testing", guild=discord.Object(id=guild_id))
     @app_commands.describe(usernames='list of usernames to query (max=4).')
-    async def gpq(interaction: discord.Interaction, usernames: str):
+    @app_commands.choices(num_weeks=[
+        discord.app_commands.Choice(name='num_weeks', value=1)
+    ])
+    async def gpq(interaction: discord.Interaction, usernames: str, num_weeks: int):
         try:  
             await interaction.response.defer()
 
