@@ -113,7 +113,7 @@ def comparison(df, users, num_weeks):
   
     # Create our dataframe
     userDF = pd.DataFrame(df.copy(), columns = ['Date'] + user_list)
-    userDF = userDF.replace('', 0)
+    userDF = userDF.replace('-', 0)
     userDF = userDF.replace(0, np.NAN)
     
     # If user wants last n weeks
