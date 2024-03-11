@@ -1,6 +1,5 @@
 from .commands import general
-import discord
-import asyncio
+import discord, traceback
 from discord.ext import commands
 from discord import app_commands
 from utils.decorators import delete_invoke_message
@@ -24,7 +23,7 @@ def setup_bot(bot):
         try:  
             await interaction.response.defer()
 
-            usernames_list = list(set(users.split(' ')))
+            usernames_list = list(set(user.lower() for user in users.split(' ')))
             result, file = await general.send_character_image_url(usernames_list, num_weeks)
 
             
@@ -42,5 +41,8 @@ def setup_bot(bot):
                 else:
                     await interaction.followup.send(embed=result)
         except Exception as e:
-                print(e)
-                await interaction.followup.send("Sorry, something went wrong.")
+                traceback_str = traceback.format_exc()    
+                print(traceback_str)
+
+                error_msg = "Sorry, something went wrong." 
+                await interaction.followup.send(error_msg)
