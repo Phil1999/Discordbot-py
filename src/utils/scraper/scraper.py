@@ -1,4 +1,4 @@
-import requests
+import requests, re
 from bs4 import BeautifulSoup
 
 def get_character_details(username):
@@ -36,11 +36,13 @@ def get_character_details(username):
         name_tag = soup.select_one(name_selector)
         level_percentage_tag = soup.select_one(level_percentage_selector)
         class_world_tag = soup.select_one(class_world_selector)
-
-        level_class_full_text = level_percentage_tag.text + " " + class_world_tag.text
+    
         # We expect the string to look something like: "Lv. 287 (14.512%) Shade in Reboot Kronos"
-        text_parts = level_class_full_text.split()
+        level_class_full_text = level_percentage_tag.text + " " + class_world_tag.text
 
+        match = re.match(r"Lv\. (\d+) \(([\d.]+)%\) (.+?) in (.+)", level_class_full_text)
+        
+        
         if image_tag:
             character_details['image_url'] = image_tag['src']
             
@@ -48,11 +50,11 @@ def get_character_details(username):
             character_details['name'] = name_tag.text
 
         if level_percentage_tag:
-            character_level = text_parts[1]
+            character_level = match.group(1)
             character_details['level'] = character_level
 
         if class_world_tag:
-            character_class = text_parts[3]
+            character_class = match.group(3)
             character_details['class'] = character_class
      
 
