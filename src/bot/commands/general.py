@@ -4,6 +4,8 @@ from utils.plot import *
 from datetime import datetime, timezone
 
 embed_side_color = discord.Color.blue() 
+separator = chr(173) # two line separator
+
 
 async def floppy():
     embed = discord.Embed()
@@ -21,13 +23,7 @@ def help():
     embed.title = "*Commands*"
     embed.set_footer(text= "Schulich Bot")
     
-    embed.add_field(
-        name="Schulich Help",
-        value="\n`/help` \n" + "Shows this message.\n\n", 
-        inline=False
-    )
-
-
+     
     embed.add_field(
         name="Culvert",
         value=(
@@ -35,19 +31,24 @@ def help():
             "Enter a **single** username to receive an image of their Culvert score.\n"
             "For **2-4** usernames, you will receive a comparative graph image against all listed players.\n"
             "Enter the optional param `num_weeks` to show the last **'num'** weeks of culvert scores. \n\n"
-            "*Note: A maximum of **4** usernames can be entered.*\n\n"
+            "*Note: A maximum of **4** usernames can be entered.*"
         ),
         inline=False
     )
+    
+    embed.add_field(name=separator, value="")
 
     embed.add_field(
         name="Discord Timestamp",
         value=(
             "\n`/converttime (timestamp), or 'now' for the current time` \n"
-            "Enter a timestamp in UTC time to convert it into a Discord timestamp. \n"
+                "Enter a timestamp in UTC time to convert it into a Discord timestamp. \n Example: 2023-03-15 14:00 \n"
         ),
         inline=False
     )
+
+    embed.add_field(name=separator, value="")
+
 
     embed.add_field(
         name="Floppy",
@@ -58,6 +59,15 @@ def help():
         inline=False
     )
 
+    embed.add_field(name=separator, value="")
+
+    embed.add_field(
+        name="Schulich Help",
+        value="\n`/help` \n" + "Shows this message.", 
+        inline=False
+    )
+
+ 
     return embed;
 
 
