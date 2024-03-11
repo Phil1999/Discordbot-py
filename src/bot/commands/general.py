@@ -5,6 +5,16 @@ from datetime import datetime, timezone
 
 embed_side_color = discord.Color.blue() 
 
+async def floppy():
+    embed = discord.Embed()
+    
+    floppy_url = "https://media1.tenor.com/m/oBNwHVvVBawAAAAd/flacid-stick-shift.gif"
+
+    embed.set_image(url=floppy_url)
+
+    return embed
+
+
 def help():
     embed = discord.Embed()
     embed.color = embed_side_color 
@@ -36,6 +46,15 @@ def help():
             "\n`/converttime (timestamp), or 'now' for the current time` \n"
             "Enter a timestamp in UTC time to convert it into a Discord timestamp. \n"
         ),
+        inline=False
+    )
+
+    embed.add_field(
+        name="Floppy",
+        value=
+            "\n`/floppy`\n"
+            ":susge: \n"
+        ,
         inline=False
     )
 
