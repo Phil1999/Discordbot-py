@@ -69,15 +69,15 @@ def setup_bot(bot):
          
         try:
             await interaction.response.defer()
-            converted_time, unix_time = await general.get_discord_timestamp(timestamp, timezone)
+            result, unix_time = await general.get_discord_timestamp(timestamp, timezone)
             
 
-            ## TODO: NEED TO REFACTOR, NOT A GOOD WAY to do this
+            ## TODO: could refactor...
             if unix_time is None:
-                await interaction.followup.send(converted_time)
+                await interaction.followup.send(result)
                 return
 
-            await interaction.followup.send(f"{converted_time} - copyable timestamp for: '<t:{unix_time}:F>'")
+            await interaction.followup.send(f"{result} - copyable timestamp: `<t:{unix_time}:F>`")
 
         except Exception as e:
             command_name = interaction.data['name']
