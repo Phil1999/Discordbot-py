@@ -24,7 +24,7 @@ def setup_bot(bot):
         try:  
             await interaction.response.defer()
 
-            usernames_list = users.split(' ')
+            usernames_list = list(set(users.split(' ')))
             result, file = await general.send_character_image_url(usernames_list, num_weeks)
 
             
