@@ -244,7 +244,7 @@ def userRank(df, user):
     ranks_df = ranks_df.replace('-', 0)
     mask = ranks_df.iloc[:,1] == 0
     ranks_df = ranks_df[~mask]
-    num_participants = df.shape[0]
+    num_participants = ranks_df.shape[0]
 
     ranks_df['Rank'] = ranks_df.iloc[:,1].rank(method = 'max', ascending = False)
     return(int(ranks_df.loc[ranks_df.iloc[:,0] == user]['Rank'].tolist()[0]), num_participants)
