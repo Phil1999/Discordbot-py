@@ -6,13 +6,14 @@ from discord import app_commands
 from utils.decorators import delete_invoke_message
 
 def setup_bot(bot):
-    @bot.tree.command(name='help', description='Shows a list of commands')
+    guild_id = 771514804895744021
+    @bot.tree.command(name='help', description='Shows a list of commands', guild=discord.Object(id=guild_id))
     async def hello(interaction: discord.Interaction):
         embed = general.help()
         await interaction.response.send_message(embed=embed)
       
        
-    @bot.tree.command(name="gpq", description="Check culvert scores")
+    @bot.tree.command(name="gpq", description="Check culvert scores", guild=discord.Object(id=guild_id))
     @app_commands.describe(users='List of users to query (max=4).', num_weeks='Optional: The last (num) weeks of scores')
     @app_commands.choices(num_weeks=[])
     async def gpq(interaction: discord.Interaction, users: str, num_weeks: int = None):
@@ -37,4 +38,5 @@ def setup_bot(bot):
                 else:
                     await interaction.followup.send(embed=result)
         except Exception as e:
+                print(e)
                 await interaction.followup.send("Sorry, something went wrong.")
