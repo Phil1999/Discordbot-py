@@ -94,15 +94,20 @@ async def send_character_image_url(usernames, num_weeks):
         if type(num_weeks) != int or num_weeks < 1:
             return "Number of weeks must be a postive integer", None
         else:
-            comparison(get_data(), usernames, num_weeks)
+            char_exists = comparison(get_data(), usernames, num_weeks)
     else:
-        comparison(get_data(), usernames, None)
+        char_exists = comparison(get_data(), usernames, None)
+
+    if char_exists == False:
+        return 'This user does not exist in the database', None
+    
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
 
     if NUM_USERS == 1:
         character_details = get_character_details(usernames[0])
         if character_details['found'] is not True:
             return "The user you entered couldn't be found", None
+
         
         embed = discord.Embed()
         embed.color = embed_side_color
@@ -114,7 +119,10 @@ async def send_character_image_url(usernames, num_weeks):
 
         des = f"Level {character_details['level'] + ' ' +  character_details['class']}"
         embed.description = des
-        embed.set_footer(text='Rank #' + str(stat_dict['rank']) + ' of ' + str(stat_dict['numptcp']) + ' in most recent week')
+        if stat_dict['rank'] == None:
+            embed.set_footer(text='User did not run last week')
+        else:
+            embed.set_footer(text=f'Rank #{stat_dict["rank"]} of {stat_dict["numptcp"]} in the most recent week')
         embed.add_field(name='Participation (%)', value = stat_dict['ptcp'], inline = False)
         embed.add_field(name='Min', value = stat_dict['min'], inline = True)
         embed.add_field(name='Average', value = stat_dict['mean'], inline = True)

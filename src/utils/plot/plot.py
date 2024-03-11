@@ -109,7 +109,7 @@ def comparison(df, users, num_weeks):
     # If true, this means that we did not find the user data for our input
     if num_users != len(user_list):
         print('IGN input is wrong')
-        return None
+        return False
   
     # Create our dataframe
     userDF = pd.DataFrame(df.copy(), columns = ['Date'] + user_list)
@@ -174,7 +174,7 @@ def comparison(df, users, num_weeks):
     # set title and y label
     ax.set_title('GPQ Scores')
     ax.set_ylabel('Score')
-    
+    ax.set_ylim(0)
 
     # make graph slightly wider
     if num_users > 1:
@@ -191,6 +191,8 @@ def comparison(df, users, num_weeks):
     plt.savefig(f'{imgdir}/graph.png')
     plt.close(fig)
 
+    return True
+
 def stats(df, user):
    # Convert user input to lowercase
     user = user.lower()
@@ -206,34 +208,40 @@ def stats(df, user):
     
     scores = userDF[name].tolist()
     
-
     scores = [x for x in scores if x != '-']
 
     numZeros = userDF[name][userDF[name] == 0].count()
     ptcp = round((len(scores)-numZeros) / len(scores) * 100,0)
 
     scores = [x for x in scores if x != 0]
-
-    minScore = min(scores)
-    maxScore = max(scores)
-    meanScore = int(round(statistics.mean(scores),0))
-    medianScore = statistics.median(scores)
-
-    minScore_formatted = f"{minScore:,}"
-    maxScore_formatted = f"{maxScore:,}"  
-    meanScore_formatted = f"{meanScore:,}"
-    medianScore_formatted = f"{medianScore:,}"
-
     user_dict = {}
-    user_dict['min'] = minScore_formatted
-    user_dict['max'] = maxScore_formatted
-    user_dict['mean'] = meanScore_formatted
-    user_dict['ptcp'] = str(ptcp) + '%'
-    user_dict['median'] = medianScore_formatted
+    if len(scores) > 0:
+        minScore = min(scores)
+        maxScore = max(scores)
+        meanScore = int(round(statistics.mean(scores),0))
+        medianScore = statistics.median(scores)
 
-    rank, num_participants = userRank(df.copy(), name)
-    user_dict['rank'] = rank
-    user_dict['numptcp'] = num_participants
+        minScore_formatted = f"{minScore:,}"
+        maxScore_formatted = f"{maxScore:,}"  
+        meanScore_formatted = f"{meanScore:,}"
+        medianScore_formatted = f"{medianScore:,}"
+
+        
+        user_dict['min'] = minScore_formatted
+        user_dict['max'] = maxScore_formatted
+        user_dict['mean'] = meanScore_formatted
+        user_dict['ptcp'] = str(ptcp) + '%'
+        user_dict['median'] = medianScore_formatted
+
+        rank, num_participants = userRank(df.copy(), name)
+        user_dict['rank'] = rank
+        user_dict['numptcp'] = num_participants
+    else:
+        user_dict['min'] = 0
+        user_dict['max'] = 0
+        user_dict['mean'] = 0
+        user_dict['ptcp'] = str(ptcp) + '%'
+        user_dict['rank'] = None
 
     return user_dict
 
@@ -247,4 +255,9 @@ def userRank(df, user):
     num_participants = ranks_df.shape[0]
 
     ranks_df['Rank'] = ranks_df.iloc[:,1].rank(method = 'max', ascending = False)
-    return(int(ranks_df.loc[ranks_df.iloc[:,0] == user]['Rank'].tolist()[0]), num_participants)
+    if user in ranks_df.iloc[:,0].tolist():
+        rank = int(ranks_df.loc[ranks_df.iloc[:,0] == user]['Rank'].tolist()[0])
+    else:
+        rank = None
+    return(rank, num_participants)
+
