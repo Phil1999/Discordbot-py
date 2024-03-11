@@ -41,6 +41,15 @@ def setup_bot(bot):
                 else:
                     await interaction.followup.send(embed=result)
         except Exception as e:
+                command_name = interaction.data['name']
+                params = {option['name']: option['value'] for option in interaction.data['options']}
+
+                # Convert params dictionary to a string representation
+                params_str = ', '.join(f'{key}={value}' for key, value in params.items()) 
+                invoking_command = f"Invoked Command: {command_name}, with params - {params_str} \n" 
+                
+                print(invoking_command)
+
                 traceback_str = traceback.format_exc()    
                 print(traceback_str)
 
