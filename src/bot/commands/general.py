@@ -1,7 +1,7 @@
 import discord
 from utils.scraper import get_character_details
 from utils.plot import *
-
+from datetime import datetime, timezone
 
 embed_side_color = discord.Color.blue() 
 
@@ -10,18 +10,34 @@ def help():
     embed.color = embed_side_color 
     embed.title = "*Commands*"
     embed.set_footer(text= "Schulich Bot")
-    embed.add_field(name="Schulich Help", value="\n`/help` \n" +
-                                 "Shows this message.\n\n", inline=False)
+    
     embed.add_field(
-    name="Culvert",
-    value=(
-        "\n`/gpq [names], optional 'num_weeks (num)'` \n"
-        "Enter a **single** username to receive an image of their Culvert score.\n"
-        "For **2-4** usernames, you will receive a comparative graph image against all listed players.\n"
-        "Enter the optional param `num_weeks` to show the last **'num'** weeks of culvert scores. \n\n"
-        "*Note: A maximum of **4** usernames can be entered.*\n\n"
+        name="Schulich Help",
+        value="\n`/help` \n" + "Shows this message.\n\n", 
+        inline=False
+    )
+
+
+    embed.add_field(
+        name="Culvert",
+        value=(
+            "\n`/gpq [names], optional 'num_weeks (num)'` \n"
+            "Enter a **single** username to receive an image of their Culvert score.\n"
+            "For **2-4** usernames, you will receive a comparative graph image against all listed players.\n"
+            "Enter the optional param `num_weeks` to show the last **'num'** weeks of culvert scores. \n\n"
+            "*Note: A maximum of **4** usernames can be entered.*\n\n"
         ),
-    inline=False)
+        inline=False
+    )
+
+    embed.add_field(
+        name="Discord Timestamp",
+        value=(
+            "\n`/converttime (timestamp), or 'now' for the current time` \n"
+            "Enter a timestamp in UTC time to convert it into a Discord timestamp. \n"
+        ),
+        inline=False
+    )
 
     return embed;
 
@@ -71,5 +87,25 @@ async def send_character_image_url(usernames, num_weeks):
         return embed, file
     else:
         return None, file
-    
-   
+
+# Note that we expect to have the time exactly formatted as YYYY-MM-DD HH:MM in UTC
+def get_discord_timestamp(timestamp):
+    try:
+        if timestamp == 'now':
+            dt = datetime.now(timezone.utc)
+        else:
+            dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
+        
+            # Make sure we are timezone aware since we know timestamp should be in UTC
+            dt = dt.replace(tzinfo=timezone.utc)
+
+        unix_timestamp = int(dt.timestamp())
+
+        discord_timestamp = f"<t:{unix_timestamp}:F>"
+
+        return discord_timestamp
+
+    except ValueError:
+        return "Please ensure the time is formatted properly as YYYY-MM-DD HH:MM' in UTC."
+
+

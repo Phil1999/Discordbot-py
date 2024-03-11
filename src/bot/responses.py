@@ -55,3 +55,32 @@ def setup_bot(bot):
 
                 error_msg = "Sorry, something went wrong." 
                 await interaction.followup.send(error_msg)
+   
+
+    @bot.tree.command(name='converttime', description='Converts UTC time to a Discord timestamp', guilds=guilds)
+    @app_commands.describe(timestamp="Enter the time in UTC or 'now' for the current time: '(e.g., 2023-03-15 14:00)'")
+    async def convert_time(interaction: discord.Interaction, timestamp: str):
+        try:
+            converted_time = general.get_discord_timestamp(timestamp)
+        
+            await interaction.response.send_message(f"The discord timestamp is: {converted_time}")
+
+        except Exception as e:
+            command_name = interaction.data['name']
+            params = {option['name']: option['value'] for option in interaction.data['options']}
+
+            # Convert params dictionary to a string representation
+            params_str = ', '.join(f'{key}={value}' for key, value in params.items()) 
+            invoking_command = f"Invoked Command: {command_name}, with params - {params_str} \n" 
+                
+            print(invoking_command)
+
+            traceback_str = traceback.format_exc()    
+            print(traceback_str)
+
+            error_msg = "Sorry, something went wrong converting the time." 
+            await interaction.response.send_message(error_msg)
+
+
+
+
