@@ -146,11 +146,11 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
 
         # Generate the UNIX timestamp and format it as a Discord timestamp.
         unix_timestamp = int(dt.timestamp())
-        discord_timestamp = f"<t:{unix_timestamp}:F>"
+        discord_timestamp = f"`<t:{unix_timestamp}:F>`"
 
-        return discord_timestamp
+        return discord_timestamp, unix_timestamp
 
     except ValueError:
-        return "Sorry, we had trouble figuring out what you meant. Please try again."
+        return "Sorry, we had trouble figuring out what you meant. Please try again.", None
 
 
