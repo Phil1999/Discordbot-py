@@ -1,7 +1,8 @@
 import discord
 from utils.scraper import get_character_details
 from utils.plot import *
-from datetime import datetime, timezone
+from datetime import datetime
+from dateutil import parser, tz
 
 embed_side_color = discord.Color.blue() 
 separator = chr(173) # two line separator
@@ -31,7 +32,7 @@ def help():
             "Enter a **single** username to receive an image of their Culvert score.\n"
             "For **2-4** usernames, you will receive a comparative graph image against all listed players.\n"
             "Enter the optional param `num_weeks` to show the last **'num'** weeks of culvert scores. \n\n"
-            "*Note: A maximum of **4** usernames can be entered.*"
+            "*Note: \nA maximum of **4** usernames can be entered.*"
         ),
         inline=False
     )
@@ -42,7 +43,13 @@ def help():
         name="Discord Timestamp",
         value=(
             "\n`/converttime (timestamp), or 'now' for the current time` \n"
-                "Enter a timestamp in UTC time to convert it into a Discord timestamp. \n Example: 2023-03-15 14:00 \n"
+                "**Enter a timestamp and optionally specify the timezone to convert it into a Discord timestamp.**\n\n"
+                "Accepted Formats for timestamp: \n"
+                "**2023-03-15 14:00** - (Simple UTC)\n"
+                "**now** - will print the current time in your timezone\n"
+                "**2023-12-25T15:00:00-08:00** - (ISO 8601 format)\n"
+                "**March 10 at 2pm timezone='PST'** - (The year is automatically generated if not specified)\n\n"
+                "*Note: \nTimezones must follow a format such as: **(PST or Asia/Tokyo)** exactly.*"
         ),
         inline=False
     )
@@ -117,24 +124,33 @@ async def send_character_image_url(usernames, num_weeks):
     else:
         return None, file
 
-# Note that we expect to have the time exactly formatted as YYYY-MM-DD HH:MM in UTC
-def get_discord_timestamp(timestamp):
+async def get_discord_timestamp(timestamp_str, timezone_str):
     try:
-        if timestamp == 'now':
-            dt = datetime.now(timezone.utc)
-        else:
-            dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
+            
+        # If a valid timezone string is provided, use it; otherwise, default to UTC.
+        user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) is not None else tz.UTC
         
-            # Make sure we are timezone aware since we know timestamp should be in UTC
-            dt = dt.replace(tzinfo=timezone.utc)
+        # Handle the special case where the timestamp is 'now'.
+        if timestamp_str.lower() == 'now':
+            dt = datetime.now(user_timezone)
+        else:
+            # Parse the timestamp string.
+            dt = parser.parse(timestamp_str)
 
+            # If the datetime object parsed does not have timezone info, use the provided/default timezone.
+            if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+                dt = dt.replace(tzinfo=user_timezone)
+            else:
+                # Convert the datetime to the specified timezone to reflect the user's local time.
+                dt = dt.astimezone(user_timezone)
+
+        # Generate the UNIX timestamp and format it as a Discord timestamp.
         unix_timestamp = int(dt.timestamp())
-
         discord_timestamp = f"<t:{unix_timestamp}:F>"
 
         return discord_timestamp
 
     except ValueError:
-        return "Please ensure the time is formatted properly as YYYY-MM-DD HH:MM' in UTC."
+        return "Sorry, we had trouble figuring out what you meant. Please try again."
 
 
