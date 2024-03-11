@@ -6,14 +6,18 @@ from discord import app_commands
 from utils.decorators import delete_invoke_message
 
 def setup_bot(bot):
-    guild_id = 771514804895744021
-    @bot.tree.command(name='help', description='Shows a list of commands', guild=discord.Object(id=guild_id))
+    
+    guild_ids = [1212500695719223367, 771514804895744021]
+
+    guilds = [discord.Object(id=guild_id) for guild_id in guild_ids]
+
+    @bot.tree.command(name='help', description='Shows a list of commands', guilds=guilds)
     async def hello(interaction: discord.Interaction):
         embed = general.help()
         await interaction.response.send_message(embed=embed)
       
        
-    @bot.tree.command(name="gpq", description="Check culvert scores", guild=discord.Object(id=guild_id))
+    @bot.tree.command(name="gpq", description="Check culvert scores", guilds=guilds)
     @app_commands.describe(users='List of users to query (max=4).', num_weeks='Optional: The last (num) weeks of scores')
     @app_commands.choices(num_weeks=[])
     async def gpq(interaction: discord.Interaction, users: str, num_weeks: int = None):
