@@ -1,7 +1,7 @@
-import discord
+import discord, re
 from utils.scraper import get_character_details
 from utils.plot import *
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser, tz
 
 embed_side_color = discord.Color.blue() 
@@ -45,12 +45,13 @@ def help():
             "\n`/converttime (timestamp), or 'now' for the current time` \n"
                 "**Enter a timestamp and optionally specify the timezone to convert it into a Discord timestamp.**\n\n"
                 "Accepted Formats for timestamp: \n"
+                "**reset+-(offset)** - (maple reset +- offset)"
                 "**2023-03-15 14:00** - (Simple UTC)\n"
                 "**now** - will print the current time in your timezone\n"
                 "**2023-12-25T15:00:00-08:00** - (ISO 8601 format)\n"
                 "**March 10 at 2pm timezone='PST'** - (The year is automatically set to current year if not specified)\n"
                 "**2/24/2024 5 pm and other variations** \n"
-                "**2242024 5pm** - (Compact dates/time) \n\n"
+                "**220424 at 5 pm** - (Compact dates/time) \n\n"
                 "...And many more! if you think it can be interpreted as a date it likely can. \n\n"
                 "*Note: \nTimezones must follow a format such as: **(PST or Asia/Tokyo)** exactly.*"
         ),
@@ -132,18 +133,40 @@ async def send_character_image_url(usernames, num_weeks):
     else:
         return None, file
 
+
+
+
 async def get_discord_timestamp(timestamp_str, timezone_str):
     try:
-        # If a valid timezone string is provided, use it; otherwise, default to UTC.
-        user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else tz.UTC
         
-        if timestamp_str.lower() == 'now':
-            # Special case: Get the current datetime in the user-specified timezone
+        reset_match = re.match(r'reset([+-]\d+)?', timestamp_str.lower());
+
+        # Special case for reset+-offset
+        if reset_match:
+            pacific_timezone = tz.gettz('America/Los_Angeles')
+
+            # Get the current time in Pacific Time to determine if it's in DST
+            pacific_now = datetime.now(pacific_timezone)
+        
+            # Determine the offset from UTC; note that .utcoffset() will return a timedelta
+            # The result is negative for PST/PDT relative to UTC, so we take the absolute value
+            pst_offset = abs(int(pacific_now.utcoffset().total_seconds() / 3600))
+
+            # Maple reset is at midnight UTC
+            maple_reset_time_utc = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        
+            offset_hours = int(reset_match.group(1)) if reset_match.group(1) else 0
+            dt = maple_reset_time_utc + timedelta(hours=offset_hours - pst_offset)
+        
+        # Special case: Get the current datetime in the user-specified timezone
+        elif timestamp_str.lower() == 'now':
+            # If a valid timezone string is provided, use it; otherwise, default to UTC.   
+            user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else tz.UTC
             dt = datetime.now(user_timezone)
         else:
             # Parse the timestamp string, ignoring any inherent timezone information
             dt = parser.parse(timestamp_str, ignoretz=True)
-
+            user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else tz.UTC
             # Localize the datetime object to the user's timezone
             dt = dt.replace(tzinfo=user_timezone)
         
