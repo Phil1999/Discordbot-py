@@ -48,7 +48,10 @@ def help():
                 "**2023-03-15 14:00** - (Simple UTC)\n"
                 "**now** - will print the current time in your timezone\n"
                 "**2023-12-25T15:00:00-08:00** - (ISO 8601 format)\n"
-                "**March 10 at 2pm timezone='PST'** - (The year is automatically generated if not specified)\n\n"
+                "**March 10 at 2pm timezone='PST'** - (The year is automatically set to current year if not specified)\n"
+                "**2/24/2024 5 pm and other variations** \n"
+                "**2242024 5pm** - (Compact dates/time) \n\n"
+                "...And many more! if you think it can be interpreted as a date it likely can. \n\n"
                 "*Note: \nTimezones must follow a format such as: **(PST or Asia/Tokyo)** exactly.*"
         ),
         inline=False
@@ -94,21 +97,15 @@ async def send_character_image_url(usernames, num_weeks):
         if type(num_weeks) != int or num_weeks < 1:
             return "Number of weeks must be a postive integer", None
         else:
-            char_exists = comparison(get_data(), usernames, num_weeks)
+            comparison(get_data(), usernames, num_weeks)
     else:
-        char_exists = comparison(get_data(), usernames, None)
-
-    if char_exists != True:
-        s = ", ".join(str(x) for x in char_exists)
-        return f'The following user(s) do not exist in the database: {s}', None
-    
+        comparison(get_data(), usernames, None)
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
 
     if NUM_USERS == 1:
         character_details = get_character_details(usernames[0])
         if character_details['found'] is not True:
             return "The user you entered couldn't be found", None
-
         
         embed = discord.Embed()
         embed.color = embed_side_color
@@ -120,10 +117,7 @@ async def send_character_image_url(usernames, num_weeks):
 
         des = f"Level {character_details['level'] + ' ' +  character_details['class']}"
         embed.description = des
-        if stat_dict['rank'] == None:
-            embed.set_footer(text='User did not run last week')
-        else:
-            embed.set_footer(text=f'Rank #{stat_dict["rank"]} of {stat_dict["numptcp"]} in the most recent week')
+        embed.set_footer(text='Rank #' + str(stat_dict['rank']) + ' of ' + str(stat_dict['numptcp']) + ' in most recent week')
         embed.add_field(name='Participation (%)', value = stat_dict['ptcp'], inline = False)
         embed.add_field(name='Min', value = stat_dict['min'], inline = True)
         embed.add_field(name='Average', value = stat_dict['mean'], inline = True)
@@ -135,26 +129,26 @@ async def send_character_image_url(usernames, num_weeks):
 
 async def get_discord_timestamp(timestamp_str, timezone_str):
     try:
-            
         # If a valid timezone string is provided, use it; otherwise, default to UTC.
-        user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) is not None else tz.UTC
+        user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else tz.UTC
         
-        # Handle the special case where the timestamp is 'now'.
         if timestamp_str.lower() == 'now':
+            # Special case: Get the current datetime in the user-specified timezone
             dt = datetime.now(user_timezone)
         else:
-            # Parse the timestamp string.
-            dt = parser.parse(timestamp_str)
+            # Parse the timestamp string, ignoring any inherent timezone information
+            dt = parser.parse(timestamp_str, ignoretz=True)
 
-            # If the datetime object parsed does not have timezone info, use the provided/default timezone.
-            if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
-                dt = dt.replace(tzinfo=user_timezone)
-            else:
-                # Convert the datetime to the specified timezone to reflect the user's local time.
-                dt = dt.astimezone(user_timezone)
+            # Localize the datetime object to the user's timezone
+            dt = dt.replace(tzinfo=user_timezone)
+        
+        # Convert the localized datetime to UTC (for generating the correct Unix timestamp)
+        utc_dt = dt.astimezone(tz.UTC)
 
-        # Generate the UNIX timestamp and format it as a Discord timestamp.
-        unix_timestamp = int(dt.timestamp())
+        # Generate the UNIX timestamp (should automatically be in UTC)
+        unix_timestamp = int(utc_dt.timestamp())
+
+        # Format as a Discord timestamp
         discord_timestamp = f"<t:{unix_timestamp}:F>"
 
         return discord_timestamp, unix_timestamp
