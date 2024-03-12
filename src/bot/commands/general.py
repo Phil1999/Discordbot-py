@@ -1,4 +1,4 @@
-import discord, re
+import discord, re, pytz
 from utils.scraper import get_character_details
 from utils.plot import *
 from datetime import datetime, timedelta
@@ -140,23 +140,18 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
     try:
         
         reset_match = re.match(r'reset([+-]\d+)?', timestamp_str.lower());
-
+        
+        utc_timezone = pytz.utc        
         # Special case for reset+-offset
         if reset_match:
-            pacific_timezone = tz.gettz('America/Los_Angeles')
-
-            # Get the current time in Pacific Time to determine if it's in DST
-            pacific_now = datetime.now(pacific_timezone)
+            
+            utc_now = datetime.now(utc_timezone)
         
-            # Determine the offset from UTC; note that .utcoffset() will return a timedelta
-            # The result is negative for PST/PDT relative to UTC, so we take the absolute value
-            pst_offset = abs(int(pacific_now.utcoffset().total_seconds() / 3600))
-
             # Maple reset is at midnight UTC
-            maple_reset_time_utc = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            maple_reset_time_utc = utc_now.replace(hour=0, minute=0, second=0, microsecond=0)
         
             offset_hours = int(reset_match.group(1)) if reset_match.group(1) else 0
-            dt = maple_reset_time_utc + timedelta(hours=offset_hours - pst_offset)
+            dt = maple_reset_time_utc + timedelta(hours=offset_hours)
         
         # Special case: Get the current datetime in the user-specified timezone
         elif timestamp_str.lower() == 'now':
