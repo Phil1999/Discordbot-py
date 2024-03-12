@@ -9,13 +9,15 @@ separator = chr(173) # two line separator
 
 
 async def floppy():
-    embed = discord.Embed()
-    
-    floppy_url = "https://media1.tenor.com/m/oBNwHVvVBawAAAAd/flacid-stick-shift.gif"
-
-    embed.set_image(url=floppy_url)
-
-    return embed
+    #embed = discord.Embed()
+    #
+    #floppy_url = "https://media1.tenor.com/m/oBNwHVvVBawAAAAd/flacid-stick-shift.gif"
+#
+    #embed.set_image(url=floppy_url)
+#
+    #return embed
+    file = discord.File(f'assets/floppy.gif', filename = 'floppy.gif')
+    return file
 
 
 def help():
