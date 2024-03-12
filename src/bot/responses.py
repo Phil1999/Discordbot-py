@@ -11,8 +11,10 @@ def setup_bot(bot):
     
     @bot.tree.command(name='floppy', description=':susge:', guilds=guilds)
     async def floppy(interaction: discord.Interaction):
+        await interaction.response.defer()
+
         file = await general.floppy()
-        await interaction.response.send_message(file=file)
+        await interaction.followup.send(file=file)
 
     @bot.tree.command(name='help', description='Shows a list of commands', guilds=guilds)
     async def hello(interaction: discord.Interaction):
