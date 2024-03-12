@@ -51,9 +51,9 @@ def help():
                 "**in 2 hours** - (relative times)\n\n"
                 "...And many more! if you think it can be interpreted as a date it likely can. \n\n"
                 "*Note: \nTimezones must follow a format such as: **(PST or Asia/Tokyo)** exactly.*\n"
-                "\t For the highest degree of accuracy, follow a standard format as much as possible\n"
-                "\t **reset** and **now** are timezone independent calculations. You do not need to put a timezone\n"
-                "\t Default timezone is UTC \n\n"
+                "For the highest degree of accuracy, follow a standard format as much as possible\n"
+                "**reset** and **now** are timezone independent calculations. You do not need to put a timezone\n"
+                "Default timezone is UTC \n\n"
         ),
         inline=False
     )
