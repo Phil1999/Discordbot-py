@@ -182,15 +182,19 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
         
 
         else:
-            
-            if timezone_str.upper() in timezone_mapping:
-                user_timezone = get_correct_timezone(timezone_str.upper()) # Let users input pst, est, ...etc
+            # Timezone logic
+            if timezone_str:
+                if timezone_str.upper() in timezone_mapping:
+                    user_timezone = get_correct_timezone(timezone_str.upper()) # Let users input pst, est, ...etc
+                else:
+                    try:
+                        user_timezone = pytz.timezone(timezone_str) # But, for canonical timezones it must match exactly
+                    except pytz.UnknownTimeZoneError:
+                        return "Sorry we had trouble figuring out what timezone you meant. Please try again.", None
             else:
-                try:
-                    user_timezone = pytz.timezone(timezone_str) # But, for canonical timezones it must match exactly
-                except pytz.UnknownTimeZoneError:
-                    return "Sorry we had trouble figuring out what timezone you meant. Please try again.", None
-           
+                user_timezone = utc_timezone
+
+
             normalized_str = normalize_time_format(timestamp_str)
             # Parse the timestamp string using dateparser first
             dt = dateparser.parse(normalized_str)
@@ -202,11 +206,14 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
 
             # We received a naive datetime if this is true
             if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
-                # So we have to add in the user timezone if it it exists
                 dt = user_timezone.localize(dt)
             
             else:
-                dt = dt.astimezone(user_timezone)
+                # We received a timestamp with the string in it
+
+                # If we received a specific timezone to parse it as
+                    if timezone_str:
+                        dt = dt.astimezone(user_timezone)
                 
         # Convert the localized datetime to UTC (for generating the correct Unix timestamp)
         utc_dt = dt.astimezone(utc_timezone)
