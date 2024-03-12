@@ -73,7 +73,7 @@ def setup_bot(bot):
             
 
             ## TODO: could refactor...
-            if result is None:
+            if unix_time is None:
                 await interaction.followup.send(result)
                 return
 
