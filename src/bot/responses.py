@@ -9,13 +9,10 @@ def setup_bot(bot):
     guild_ids = [1212500695719223367, 771514804895744021]
     guilds = [discord.Object(id=guild_id) for guild_id in guild_ids]
     
-    
     @bot.tree.command(name='floppy', description=':susge:', guilds=guilds)
     async def floppy(interaction: discord.Interaction):
-        await interaction.response.defer()
-
         file = await general.floppy()
-        await interaction.followup.send(file=file)
+        await interaction.response.send_message(file=file)
 
     @bot.tree.command(name='help', description='Shows a list of commands', guilds=guilds)
     async def hello(interaction: discord.Interaction):
