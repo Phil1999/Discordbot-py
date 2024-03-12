@@ -123,7 +123,10 @@ async def send_character_image_url(usernames, num_weeks):
 
         des = f"Level {character_details['level'] + ' ' +  character_details['class']}"
         embed.description = des
-        embed.set_footer(text='Rank #' + str(stat_dict['rank']) + ' of ' + str(stat_dict['numptcp']) + ' in most recent week')
+        if stat_dict['rank'] != None:
+            embed.set_footer(text='Rank #' + str(stat_dict['rank']) + ' of ' + str(stat_dict['numptcp']) + ' in most recent week')
+        else:
+            embed.set_footer(text='User did not run last week')
         embed.add_field(name='Participation (%)', value = stat_dict['ptcp'], inline = False)
         embed.add_field(name='Min', value = stat_dict['min'], inline = True)
         embed.add_field(name='Average', value = stat_dict['mean'], inline = True)
