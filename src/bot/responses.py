@@ -64,7 +64,7 @@ def setup_bot(bot):
    
 
     @bot.tree.command(name='converttime', description='Converts time to a Discord timestamp. See /help for more info.', guilds=guilds)
-    @app_commands.describe(timestamp="Enter a time or 'now' for the current time", timezone="Enter a timezone (e.g. PST or America/Los_Angeles), default: UTC")
+    @app_commands.describe(timestamp="Enter a time or 'now' for the current time. Default timezone: UTC", timezone="Enter a timezone (e.g. PST or America/Los_Angeles)")
     async def convert_time(interaction: discord.Interaction, timestamp: str, timezone: str=None):
          
         try:
@@ -73,7 +73,7 @@ def setup_bot(bot):
             
 
             ## TODO: could refactor...
-            if unix_time is None:
+            if result is None:
                 await interaction.followup.send(result)
                 return
 
