@@ -109,7 +109,10 @@ def comparison(df, users, num_weeks):
     # If true, this means that we did not find the user data for our input
     if num_users != len(user_list):
         print('IGN input is wrong')
-        return False
+        s = set(user_list)
+        wrong_ign = [x for x in users if x not in s]
+        
+        return wrong_ign
   
     # Create our dataframe
     userDF = pd.DataFrame(df.copy(), columns = ['Date'] + user_list)
@@ -140,12 +143,12 @@ def comparison(df, users, num_weeks):
     n_shades = 10
     diff_linewidth = 1.05
     alpha_value = 0.3 / n_shades
-
+    titlestr = ''
     fig, ax = plt.subplots()
     for i, user in enumerate(user_list):
         u = userDF[user]
         # plot initial line for each user
-        ax.plot(date, u, color = colors[i], marker = 'none', linewidth = 1.7, label = user)
+        ax.plot(date, u, color = colors[i], marker = 'o', linewidth = 1.7, label = user)
 
         # add glow effect to each line
         for n in range(1, n_shades+1):
@@ -155,32 +158,42 @@ def comparison(df, users, num_weeks):
         # add colour underneath line
         ax.fill_between(date, 0, u, alpha = 0.1, color = colors[i])
 
+        # determine the title
+        if (i+1) < num_users:
+            s = user + ' vs. '
+            titlestr += s
+        else:
+            titlestr += user
+
     # grid colour
     ax.grid(color='#2A3459')
 
     # Border (spines) set to invisible
-    ax.spines['top'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.spines['right'].set_visible(False)
+    spines = False
+    ax.spines['top'].set_visible(spines)
+    ax.spines['bottom'].set_visible(spines)
+    ax.spines['left'].set_visible(spines)
+    ax.spines['right'].set_visible(spines)
 
     # set x tick labels
     ax.set_xticks(xtick)
     ax.set_xticklabels(xtick, rotation = 30, fontsize = 13)
 
+    plt.yticks(fontsize = 13)
     # set legends equal to labels
-    ax.legend(fancybox = True, framealpha=1, facecolor = '#212946', labelcolor = 'white')
+    ax.legend(fancybox = True, framealpha=1, facecolor = '#212946', labelcolor = 'white', fontsize = 12)
 
-    # set title and y label
-    ax.set_title('GPQ Scores')
+    # set y label
     ax.set_ylabel('Score')
     ax.set_ylim(0)
 
-    # make graph slightly wider
+    # make graph slightly wider and set title
     if num_users > 1:
         fig.set_figwidth(12)
+        ax.set_title(f'GPQ Scores ({titlestr})', fontsize = 14)
     else:
         fig.set_figwidth(7.5)
+        ax.set_title('GPQ Scores', fontsize = 14)
 
     # save graph
     imgdir = 'assets/images'

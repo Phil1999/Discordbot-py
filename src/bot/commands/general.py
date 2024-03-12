@@ -98,8 +98,9 @@ async def send_character_image_url(usernames, num_weeks):
     else:
         char_exists = comparison(get_data(), usernames, None)
 
-    if char_exists == False:
-        return 'This user does not exist in the database', None
+    if char_exists != True:
+        s = ", ".join(str(x) for x in char_exists)
+        return f'The following user(s) do not exist in the database: {s}', None
     
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
 
