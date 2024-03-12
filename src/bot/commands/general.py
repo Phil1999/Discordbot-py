@@ -145,7 +145,7 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
         # Special case for reset+-offset
         if reset_match:
             
-            utc_now = datetime.now(utc_timezone)
+            utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
         
             # Maple reset is at midnight UTC
             maple_reset_time_utc = utc_now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -157,14 +157,14 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
         elif timestamp_str.lower() == 'now':
             # If a valid timezone string is provided, use it; otherwise, default to UTC.   
             user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else utc_timezone
-            dt = datetime.now(user_timezone)
+            dt = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(user_timezone)
+
         else:
             # Parse the timestamp string, ignoring any inherent timezone information
             dt = parser.parse(timestamp_str, ignoretz=True)
             user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else utc_timezone
-            # Localize the datetime object to the user's timezone
             dt = dt.replace(tzinfo=user_timezone)
-        
+
         # Convert the localized datetime to UTC (for generating the correct Unix timestamp)
         utc_dt = dt.astimezone(utc_timezone)
 
