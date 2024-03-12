@@ -156,17 +156,17 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
         # Special case: Get the current datetime in the user-specified timezone
         elif timestamp_str.lower() == 'now':
             # If a valid timezone string is provided, use it; otherwise, default to UTC.   
-            user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else tz.UTC
+            user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else utc_timezone
             dt = datetime.now(user_timezone)
         else:
             # Parse the timestamp string, ignoring any inherent timezone information
             dt = parser.parse(timestamp_str, ignoretz=True)
-            user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else tz.UTC
+            user_timezone = tz.gettz(timezone_str) if timezone_str and tz.gettz(timezone_str) else utc_timezone
             # Localize the datetime object to the user's timezone
             dt = dt.replace(tzinfo=user_timezone)
         
         # Convert the localized datetime to UTC (for generating the correct Unix timestamp)
-        utc_dt = dt.astimezone(tz.UTC)
+        utc_dt = dt.astimezone(utc_timezone)
 
         # Generate the UNIX timestamp (should automatically be in UTC)
         unix_timestamp = int(utc_dt.timestamp())
