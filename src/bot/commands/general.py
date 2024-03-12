@@ -45,7 +45,7 @@ def help():
             "\n`/converttime (timestamp), or 'now' for the current time` \n"
                 "**Enter a timestamp and optionally specify the timezone to convert it into a Discord timestamp.**\n\n"
                 "Accepted Formats for timestamp: \n"
-                "**reset+-(offset)** - (maple reset +- offset)"
+                "**reset+-(offset)** - (maple reset +- offset)\n"
                 "**2023-03-15 14:00** - (Simple UTC)\n"
                 "**now** - will print the current time in your timezone\n"
                 "**2023-12-25T15:00:00-08:00** - (ISO 8601 format)\n"
