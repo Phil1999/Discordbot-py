@@ -97,9 +97,14 @@ async def send_character_image_url(usernames, num_weeks):
         if type(num_weeks) != int or num_weeks < 1:
             return "Number of weeks must be a postive integer", None
         else:
-            comparison(get_data(), usernames, num_weeks)
+            char_exists = comparison(get_data(), usernames, num_weeks)
     else:
-        comparison(get_data(), usernames, None)
+        char_exists = comparison(get_data(), usernames, None)
+
+    if char_exists != True:
+        s = ", ".join(str(x) for x in char_exists)
+        return f'The following user(s) do not exist in the database: {s}', None
+
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
 
     if NUM_USERS == 1:
