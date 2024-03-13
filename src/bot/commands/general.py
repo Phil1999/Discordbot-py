@@ -175,8 +175,8 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
             minutes = int((offset_hours - full_hours) * 60)
 
             utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
-            # Maple reset is at midnight UTC, since we reset to 00:00:00 of current day, add 24 hours.
-            maple_reset_time_utc = utc_now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+            # Maple reset is at midnight UTC, since we reset to 00:00:00 of current day
+            maple_reset_time_utc = utc_now.replace(hour=0, minute=0, second=0, microsecond=0) 
         
             dt = maple_reset_time_utc + timedelta(hours=full_hours, minutes=minutes)
         
