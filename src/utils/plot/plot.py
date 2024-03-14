@@ -109,9 +109,8 @@ def comparison(df, users, num_weeks):
     # If true, this means that we did not find the user data for our input
     if num_users != len(user_list):
         print('IGN input is wrong')
-        s = set(user_list)
-        wrong_ign = [x for x in users if x not in s]
-        
+        s = [x.lower() for x in user_list]
+        wrong_ign = [x for x in users if x.lower() not in s]
         return wrong_ign
   
     # Create our dataframe
