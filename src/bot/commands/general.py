@@ -41,7 +41,6 @@ def help():
             "\n`/converttime (timestamp), or 'now' for the current time` \n"
                 "**Enter a timestamp and optionally specify the timezone to convert it into a Discord timestamp.**\n\n"
                 "Accepted Formats for timestamp: \n"
-                "**reset+-(offset)** - (maple reset +- offset)\n"
                 "**2023-03-15 14:00** - (Simple UTC)\n"
                 "**now** - will print the current time in your timezone\n"
                 "**2023-12-25T15:00:00-08:00** - (ISO 8601 format)\n"
@@ -52,7 +51,7 @@ def help():
                 "...And many more! if you think it can be interpreted as a date it likely can. \n\n"
                 "*Note: \nTimezones must follow a format such as: **(PST or Asia/Tokyo)** exactly.*\n"
                 "For the highest degree of accuracy, follow a standard format as much as possible\n"
-                "**reset** and **now** are timezone independent calculations. You do not need to put a timezone\n"
+                "**now** is a timezone independent calculation. You do not need to put a timezone\n"
                 "Default timezone is UTC \n\n"
         ),
         inline=False
@@ -175,12 +174,11 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
             minutes = int((offset_hours - full_hours) * 60)
 
             utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
-            # Maple reset is at midnight UTC, since we reset to 00:00:00 of current day
+            # Maple reset is at midnight UTC, since we reset to 00:00:00 of current day add 24 hours.
             maple_reset_time_utc = utc_now.replace(hour=0, minute=0, second=0, microsecond=0) 
         
             dt = maple_reset_time_utc + timedelta(hours=full_hours, minutes=minutes)
         
-
         else:
             # Timezone logic
             if timezone_str:
