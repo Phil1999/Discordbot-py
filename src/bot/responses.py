@@ -94,14 +94,17 @@ def setup_bot(bot):
 
             error_msg = "Sorry, something went wrong converting the time." 
             await interaction.followup.send(error_msg)
+
+
     @bot.event
     async def on_message(message):
+        
         if message.author.id == 172520567163977729:
             if 'nerd' in message.content.lower():
-                await message.channel.send(':nerd:')
+                await message.channel.send(':nerd: :point_up:')
         elif message.author.id == 108311639958265856:
             if 'hold' in message.content.lower():
-                await message.channel.send(':nerd:')
+                await message.channel.send(':nerd: :point_up:')
 
 
 
