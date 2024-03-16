@@ -1,9 +1,10 @@
-import discord, re, pytz
+import discord, re
 from utils.scraper import get_character_details
 from utils.plot import *
 from datetime import datetime, timedelta
 from dateutil import parser, tz
 import dateparser
+from zoneinfo import ZoneInfo
 
 embed_side_color = discord.Color.blue() 
 separator = chr(173) # two line separator
@@ -51,7 +52,7 @@ def help():
                 "...And many more! if you think it can be interpreted as a date it likely can. \n\n"
                 "*Note: \nTimezones must follow a format such as: **(PST or Asia/Tokyo)** exactly.*\n"
                 "For the highest degree of accuracy, follow a standard format as much as possible\n"
-                "**now** is a timezone independent calculation. You do not need to put a timezone\n"
+                "**now** is a timezone independent calculations. You do not need to put a timezone\n"
                 "Default timezone is UTC \n\n"
         ),
         inline=False
@@ -149,7 +150,7 @@ timezone_mapping = {
 
 # Helper method to map abbreviations to pytz identifier, defaults to UTC if not found.
 def get_correct_timezone(tz_str):
-    return pytz.timezone(timezone_mapping.get(tz_str, 'UTC'))
+    return ZoneInfo(timezone_mapping.get(tz_str, 'UTC'))
 
 def normalize_time_format(time_str):
     time_str = re.sub(r'(?P<hour>\d{1,2})(?P<minute>\d{2})(am|pm)', r'\g<hour>:\g<minute>\3', time_str, flags=re.IGNORECASE)
@@ -161,7 +162,7 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
         reset_pattern = r'reset(?:\s*([+-]?\s*\d+(?:\.\d+)?))?(?:\s*hours?)?'
         reset_match = re.match(reset_pattern, timestamp_str, flags=re.IGNORECASE)
      
-        utc_timezone = pytz.utc
+        utc_timezone = ZoneInfo("UTC")
 
         # Special case for reset+-offset
         if reset_match:
@@ -173,9 +174,8 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
             full_hours = int(offset_hours)
             minutes = int((offset_hours - full_hours) * 60)
 
-            utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
             # Maple reset is at midnight UTC, since we reset to 00:00:00 of current day add 24 hours.
-            maple_reset_time_utc = utc_now.replace(hour=0, minute=0, second=0, microsecond=0) 
+            maple_reset_time_utc = datetime.now(utc_timezone).replace(hour=0, minute=0, second=0, microsecond=0) 
         
             dt = maple_reset_time_utc + timedelta(hours=full_hours, minutes=minutes)
         
@@ -186,8 +186,8 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
                     user_timezone = get_correct_timezone(timezone_str.upper()) # Let users input pst, est, ...etc
                 else:
                     try:
-                        user_timezone = pytz.timezone(timezone_str) # But, for canonical timezones it must match exactly
-                    except pytz.UnknownTimeZoneError:
+                        user_timezone = ZoneInfo(timezone_str) # But, for canonical timezones it must match exactly
+                    except Exception:
                         return "Sorry we had trouble figuring out what timezone you meant. Please try again.", None
             else:
                 user_timezone = utc_timezone
@@ -204,7 +204,7 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
 
             # We received a naive datetime if this is true
             if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
-                dt = user_timezone.localize(dt)
+                dt = dt.replace(tzinfo=user_timezone)
             
             else:
                 # We received a timestamp with the string in it
