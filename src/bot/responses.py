@@ -1,8 +1,9 @@
 from .commands import general
-import discord, traceback
+import discord, traceback, logging
 from discord.ext import commands
 from discord import app_commands
 from utils.decorators import delete_invoke_message
+
 
 def setup_bot(bot):
     
@@ -108,6 +109,23 @@ def setup_bot(bot):
                 await message.channel.send(message.content + ' :nerd: :point_up:')
 
             
+    @bot.tree.command(name='read_data', description='Reads in a csv file.', guilds=guilds)
+    @app_commands.describe(attachment= "Enter a csv file.")
+    async def read_csv_data(interaction: discord.Interaction, attachment: discord.Attachment):
+            
+        allowed_users= [151493263654780928, 226786266543423488, 108030919402639360]
+
+        user_id = interaction.user.id
+
+        if user_id in allowed_users:
+            # We don't need to check if attachment exists because it is required.
+            response = await general.save_csv(attachment)
+            await interaction.response.send_message(response)
+        else:
+            await interaction.response.send_message("No permissions to run this command")
+
+
+
 
 
 

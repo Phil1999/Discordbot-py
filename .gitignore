@@ -11,5 +11,5 @@ venv/
 myenv/
 
 *.png
-
+*.csv
 my_proj
