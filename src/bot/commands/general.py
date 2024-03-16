@@ -164,6 +164,19 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
      
         utc_timezone = ZoneInfo("UTC")
 
+         # Timezone logic
+        if timezone_str:
+            if timezone_str.upper() in timezone_mapping:
+                user_timezone = get_correct_timezone(timezone_str.upper()) # Let users input pst, est, ...etc
+            else:
+                try:
+                    user_timezone = ZoneInfo(timezone_str) # But, for canonical timezones it must match exactly
+                except Exception:
+                    return "Sorry we had trouble figuring out what timezone you meant. Please try again.", None
+        else:
+            user_timezone = utc_timezone
+
+
         # Special case for reset+-offset
         if reset_match:
             # Remove whitespace so we can parse 
@@ -180,22 +193,11 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
             dt = maple_reset_time_utc + timedelta(hours=full_hours, minutes=minutes)
         
         else:
-            # Timezone logic
-            if timezone_str:
-                if timezone_str.upper() in timezone_mapping:
-                    user_timezone = get_correct_timezone(timezone_str.upper()) # Let users input pst, est, ...etc
-                else:
-                    try:
-                        user_timezone = ZoneInfo(timezone_str) # But, for canonical timezones it must match exactly
-                    except Exception:
-                        return "Sorry we had trouble figuring out what timezone you meant. Please try again.", None
-            else:
-                user_timezone = utc_timezone
-
+           
 
             normalized_str = normalize_time_format(timestamp_str)
             # Parse the timestamp string using dateparser first
-            dt = dateparser.parse(normalized_str, languages=['en'])
+            dt = dateparser.parse(normalized_str, languages=['en'], settings={'TIMEZONE': str(user_timezone), 'RETURN_AS_TIMEZONE_AWARE' : True})
             
             # Otherwise, try dateutils.parse
             if not dt:
