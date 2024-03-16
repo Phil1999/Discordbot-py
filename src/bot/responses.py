@@ -101,10 +101,13 @@ def setup_bot(bot):
         
         if message.author.id == 172520567163977729:
             if 'nerd' in message.content.lower():
-                await message.channel.send(':nerd: :point_up:')
+                await message.channel.send(message.content + ' :nerd: :point_up:')
         elif message.author.id == 108311639958265856:
-            if 'hold' in message.content.lower():
-                await message.channel.send(':nerd: :point_up:')
+            if all(x in message.content.lower() for x in ['hold', 'nuts']) or \
+                all(x in message.content.lower() for x in ['hold', 'nut']):
+                await message.channel.send(message.content + ' :nerd: :point_up:')
+
+            
 
 
 

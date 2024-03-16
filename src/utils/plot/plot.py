@@ -14,6 +14,9 @@ import statistics
 def update_data():
     gc = gspread.service_account()
 
+    # First back up the data
+    backUpData(gc)
+    
     # Input sheet
     sh = gc.open('culvert')
     wks = sh.worksheet('Input')
@@ -273,3 +276,15 @@ def userRank(df, user):
         rank = None
     return(rank, num_participants)
 
+def backUpData(gc):
+    sh = gc.open('culvert')
+    main_dat = sh.worksheet('Main Data')
+    s = 'Backup'
+    try:
+        backup = sh.worksheet(s)
+    except gspread.exceptions.WorksheetNotFound:
+        backup = sh.add_worksheet(title=s, rows = 200, cols = 500)
+   
+    backup.clear()
+    df = pd.DataFrame(main_dat.get_all_records())
+    backup.update([df.columns.values.tolist()] + df.values.tolist())
