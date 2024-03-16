@@ -201,7 +201,7 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
             
             # Otherwise, try dateutils.parse
             if not dt:
-                dt = parser.parse(normalized_str, fuzzy=True)
+                dt = parser.parse(normalized_str)
 
 
             # We received a naive datetime if this is true
