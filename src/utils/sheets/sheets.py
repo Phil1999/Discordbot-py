@@ -6,7 +6,7 @@ import numpy as np
 import gspread
 import os
 
-def update_data():
+async def update_data():
     gc = gspread.service_account()
 
     # First back up the data
@@ -83,7 +83,7 @@ def backUpData(gc):
     df = pd.DataFrame(main_dat.get_all_records())
     backup.update([df.columns.values.tolist()] + df.values.tolist())
 
-def csv_to_sheets():
+async def csv_to_sheets():
     filepath = f'assets/data/data.csv'
     df = pd.read_csv(filepath, header=None)
     df = df.rename({0:'Original', 1:'Score'}, axis = 'columns')
@@ -91,7 +91,7 @@ def csv_to_sheets():
 
     gc = gspread.service_account()
     sh = gc.open('culvert')
-    s = 'Raw Data'
+    s = 'Input'
     try:
         dat = sh.worksheet(s)
     except gspread.exceptions.WorksheetNotFound:
@@ -127,8 +127,8 @@ def csv_to_sheets():
     if valid:
         dat.update_cell(2,1, current_week.strftime("%Y-%m-%d"))
     else:
-        return("It is too early to update culvert.")
-    return("CSV export to google sheets was successful.")
+        return False
+    return True
 
 def validate_date(most_recent):
     dt = datetime.strptime(most_recent, "%Y-%m-%d")
