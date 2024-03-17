@@ -7,61 +7,65 @@ import gspread
 import os
 
 async def update_data():
-    gc = gspread.service_account()
+    try:
+        gc = gspread.service_account()
 
-    # First back up the data
-    backUpData(gc)
-    
-    # Input sheet
-    sh = gc.open('culvert')
-    wks = sh.worksheet('Input')
-    dat = wks.get_all_records()
-    date = dat[0]['Date']
+        # First back up the data
+        backUpData(gc)
+        
+        # Input sheet
+        sh = gc.open('culvert')
+        wks = sh.worksheet('Input')
+        dat = wks.get_all_records()
+        date = dat[0]['Date']
 
-    input_names = {}
-    for col in dat:
-        name = col['Name']
-        score = col['Score']
-        input_names[name] = score
-    names_lower = {k.lower(): v for k, v in input_names.items()}
+        input_names = {}
+        for col in dat:
+            name = col['Name']
+            score = col['Score']
+            input_names[name] = score
+        names_lower = {k.lower(): v for k, v in input_names.items()}
 
-    # Data sheet
-    wks2 = sh.worksheet('Main Data')
-    df = pd.DataFrame(wks2.get_all_records())
-    current_names = list(df.columns.values)[1:]
+        # Data sheet
+        wks2 = sh.worksheet('Main Data')
+        df = pd.DataFrame(wks2.get_all_records())
+        current_names = list(df.columns.values)[1:]
 
 
-    # If date does not exist, add it to main sheet
-    if date not in df['Date'].values:
-       df.loc[-1] = date
+        # If date does not exist, add it to main sheet
+        if date not in df['Date'].values:
+            df.loc[-1] = date
 
-    # loop through every name in current database
-    for name in current_names:
-        name_lower = name.lower()
-        # if name in database is equal to input list, update the score
-        if name_lower in names_lower:
-            df.loc[df['Date'] == date, name] = input_names[name]
-        # otherwise, the user exists but has not ran, update score to 0
-        else:
-            df.loc[df['Date'] == date, name] = 0
-    # Write these changes
-    wks2.update([df.columns.values.tolist()] + df.values.tolist())
+        # loop through every name in current database
+        for name in current_names:
+            name_lower = name.lower()
+            # if name in database is equal to input list, update the score
+            if name_lower in names_lower:
+                df.loc[df['Date'] == date, name] = input_names[name]
+            # otherwise, the user exists but has not ran, update score to 0
+            else:
+                df.loc[df['Date'] == date, name] = 0
+        # Write these changes
+        wks2.update([df.columns.values.tolist()] + df.values.tolist())
 
-    # now that changes are written, pull data into dataframe again
-    # we will now iterate of the input names to check for new users
+        # now that changes are written, pull data into dataframe again
+        # we will now iterate of the input names to check for new users
 
-    df = pd.DataFrame(wks2.get_all_records())
-    updated_names = list(df.columns.values)[1:]
+        df = pd.DataFrame(wks2.get_all_records())
+        updated_names = list(df.columns.values)[1:]
 
-    un_lower = [x.lower() for x in updated_names]
-    for user in dat:
-        name = user['Name']
-        score = user['Score']
-        if name.lower() not in un_lower:
-            df[name] = '-'
-            df.loc[df['Date'] == date, name] = score
+        un_lower = [x.lower() for x in updated_names]
+        for user in dat:
+            name = user['Name']
+            score = user['Score']
+            if name.lower() not in un_lower:
+                df[name] = '-'
+                df.loc[df['Date'] == date, name] = score
 
-    wks2.update([df.columns.values.tolist()] + df.values.tolist())
+        wks2.update([df.columns.values.tolist()] + df.values.tolist())
+        return True
+    except Exception as e:
+        return False
 
 def get_data():
     gc = gspread.service_account()
@@ -85,6 +89,14 @@ def backUpData(gc):
 
 async def csv_to_sheets():
     filepath = f'assets/data/data.csv'
+
+    valid, current_week = validate_date(most_recent)
+    
+    if valid:
+        date = current_week.strftime("%Y-%m-%d")
+    else:
+        return False
+
     df = pd.read_csv(filepath, header=None)
     df = df.rename({0:'Original', 1:'Score'}, axis = 'columns')
     df.insert(1, 'Name', "")
@@ -121,13 +133,7 @@ async def csv_to_sheets():
     most_recent = datecol[-1]
 
     dat.update_cell(1,1, 'Date')
-    
-    valid, current_week = validate_date(most_recent)
-    
-    if valid:
-        dat.update_cell(2,1, current_week.strftime("%Y-%m-%d"))
-    else:
-        return False
+    dat.update_cell(2,1, date)
     return True
 
 def validate_date(most_recent):

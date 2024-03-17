@@ -109,7 +109,9 @@ def setup_bot(bot):
                 await message.channel.send(message.content + ' :nerd: :point_up:')
 
             
-    @bot.tree.command(name='read_data', description='Reads in a csv file.', guilds=guilds)
+    @bot.tree.command(name='update_database', 
+                      description='Reads in a csv file which is added to the main database',
+                       guilds=guilds)
     @app_commands.describe(attachment= "Enter a csv file.")
     async def read_csv_data(interaction: discord.Interaction, attachment: discord.Attachment):
         await interaction.response.defer()            

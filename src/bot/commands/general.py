@@ -251,12 +251,12 @@ async def save_csv(attachment: discord.Attachment):
         await file.save(file_path)
 
         export_valid = await csv_to_sheets()
-        if export_valid == True:
+        if export_valid:
             update_valid = await update_data()
         else:
             return "It is too early to update culvert data."
         
-        if update_valid == True:
+        if update_valid:
             return "Data update was successful."
         else:
             return "Data update was unsuccessful."
