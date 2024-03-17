@@ -1,79 +1,12 @@
 import pandas as pd
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib
 from datetime import datetime, date, timedelta
 import numpy as np
-import gspread
 import os
 import math
 import statistics
-
-def update_data():
-    gc = gspread.service_account()
-
-    # First back up the data
-    backUpData(gc)
-    
-    # Input sheet
-    sh = gc.open('culvert')
-    wks = sh.worksheet('Input')
-    dat = wks.get_all_records()
-    date = dat[0]['Date']
-
-    input_names = {}
-    for col in dat:
-        name = col['Name']
-        score = col['Score']
-        input_names[name] = score
-    names_lower = {k.lower(): v for k, v in input_names.items()}
-
-    # Data sheet
-    wks2 = sh.worksheet('Main Data')
-    df = pd.DataFrame(wks2.get_all_records())
-    current_names = list(df.columns.values)[1:]
-
-
-    # If date does not exist, add it to main sheet
-    if date not in df['Date'].values:
-       df.loc[-1] = date
-
-    # loop through every name in current database
-    for name in current_names:
-        name_lower = name.lower()
-        # if name in database is equal to input list, update the score
-        if name_lower in names_lower:
-            df.loc[df['Date'] == date, name] = input_names[name]
-        # otherwise, the user exists but has not ran, update score to 0
-        else:
-            df.loc[df['Date'] == date, name] = 0
-    # Write these changes
-    wks2.update([df.columns.values.tolist()] + df.values.tolist())
-
-    # now that changes are written, pull data into dataframe again
-    # we will now iterate of the input names to check for new users
-
-    df = pd.DataFrame(wks2.get_all_records())
-    updated_names = list(df.columns.values)[1:]
-
-    un_lower = [x.lower() for x in updated_names]
-    for user in dat:
-        name = user['Name']
-        score = user['Score']
-        if name.lower() not in un_lower:
-            df[name] = '-'
-            df.loc[df['Date'] == date, name] = score
-
-    wks2.update([df.columns.values.tolist()] + df.values.tolist())
-
-def get_data():
-    gc = gspread.service_account()
-    sh = gc.open('culvert')
-    wks = sh.worksheet('Main Data')
-    df = pd.DataFrame(wks.get_all_records())
-    return df
 
 def xLabelTicks(df):
     today = str(date.today())
@@ -276,15 +209,3 @@ def userRank(df, user):
         rank = None
     return(rank, num_participants)
 
-def backUpData(gc):
-    sh = gc.open('culvert')
-    main_dat = sh.worksheet('Main Data')
-    s = 'Backup'
-    try:
-        backup = sh.worksheet(s)
-    except gspread.exceptions.WorksheetNotFound:
-        backup = sh.add_worksheet(title=s, rows = 200, cols = 500)
-   
-    backup.clear()
-    df = pd.DataFrame(main_dat.get_all_records())
-    backup.update([df.columns.values.tolist()] + df.values.tolist())

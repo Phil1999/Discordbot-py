@@ -1,6 +1,7 @@
 import discord, re
 from utils.scraper import get_character_details
 from utils.plot import *
+from utils.sheets import *
 from datetime import datetime, timedelta
 from dateutil import parser, tz
 import dateparser
@@ -79,7 +80,7 @@ def help():
     )
 
  
-    return embed;
+    return embed
 
 
 async def send_character_image_url(usernames, num_weeks):
@@ -248,7 +249,11 @@ async def save_csv(attachment: discord.Attachment):
         file_path = os.path.join(save_path, file_saved_name)
 
         await file.save(file_path)
-        return "Successfully saved the file"
+
+        msg = csv_to_sheets()
+        return msg
+
+
 
      
 

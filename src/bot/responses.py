@@ -120,6 +120,7 @@ def setup_bot(bot):
         if user_id in allowed_users:
             # We don't need to check if attachment exists because it is required.
             response = await general.save_csv(attachment)
+            
             await interaction.response.send_message(response)
         else:
             await interaction.response.send_message("No permissions to run this command")
