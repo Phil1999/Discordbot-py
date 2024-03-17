@@ -31,7 +31,6 @@ async def update_data():
         df = pd.DataFrame(wks2.get_all_records())
         current_names = list(df.columns.values)[1:]
 
-
         # If date does not exist, add it to main sheet
         if date not in df['Date'].values:
             df.loc[-1] = date
@@ -109,7 +108,7 @@ async def csv_to_sheets():
     df.insert(1, 'Name', "")
     
     s = 'Input'
-    
+
     try:
         dat = sh.worksheet(s)
     except gspread.exceptions.WorksheetNotFound:
