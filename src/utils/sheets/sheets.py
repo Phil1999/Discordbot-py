@@ -89,6 +89,11 @@ def backUpData(gc):
 
 async def csv_to_sheets():
     filepath = f'assets/data/data.csv'
+    
+    # Get most recent date and validate that data should be updated
+    main_data = sh.worksheet('Main Data')
+    datecol = main_data.col_values(1)
+    most_recent = datecol[-1]
 
     valid, current_week = validate_date(most_recent)
     
@@ -126,11 +131,6 @@ async def csv_to_sheets():
     for cell in cell_list:
         cell.value = ""
     dat.update_cells(cell_list)
-    
-    # Get most recent date and validate that data should be updated
-    main_data = sh.worksheet('Main Data')
-    datecol = main_data.col_values(1)
-    most_recent = datecol[-1]
 
     dat.update_cell(1,1, 'Date')
     dat.update_cell(2,1, date)
