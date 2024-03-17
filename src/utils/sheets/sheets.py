@@ -89,7 +89,9 @@ def backUpData(gc):
 
 async def csv_to_sheets():
     filepath = f'assets/data/data.csv'
-    
+
+    gc = gspread.service_account()
+    sh = gc.open('culvert')
     # Get most recent date and validate that data should be updated
     main_data = sh.worksheet('Main Data')
     datecol = main_data.col_values(1)
@@ -105,10 +107,9 @@ async def csv_to_sheets():
     df = pd.read_csv(filepath, header=None)
     df = df.rename({0:'Original', 1:'Score'}, axis = 'columns')
     df.insert(1, 'Name', "")
-
-    gc = gspread.service_account()
-    sh = gc.open('culvert')
+    
     s = 'Input'
+    
     try:
         dat = sh.worksheet(s)
     except gspread.exceptions.WorksheetNotFound:
