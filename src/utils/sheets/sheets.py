@@ -1,7 +1,7 @@
 import pandas as pd
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 import numpy as np
 import gspread
 import os
@@ -139,7 +139,8 @@ async def csv_to_sheets():
 def validate_date(most_recent):
     dt = datetime.strptime(most_recent, "%Y-%m-%d")
     current_week = timedelta(days = 7) + dt 
-    today = datetime.now()
-    valid = today - timedelta(days=1, hours = 2) >= current_week
-
+    
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
+    valid = today - timedelta(days=1, hours =-2) >= current_week
+    
     return valid, current_week
