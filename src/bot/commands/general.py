@@ -112,17 +112,18 @@ async def send_character_image_url(usernames, num_weeks):
     if NUM_USERS == 1:   
         embed = discord.Embed()
         embed.color = embed_side_color
-        title = f"{character_details['name']}"
-        embed.title = title
         character_details = get_character_details(usernames[0])
+        
         if character_details['found'] is not True:
             embed.set_thumbnail(url='https://easydrawingguides.com/wp-content/uploads/2023/06/how-to-draw-spongebob-squarepants-featured-image-1200.png')
             des = 'Level 999 Shadower'
+            title = usernames[0]
         else:
             embed.set_thumbnail(url=character_details['image_url'])
+            title = f"{character_details['name']}"
             des = f"Level {character_details['level'] + ' ' +  character_details['class']}"
         stat_dict = stats(get_data(), usernames[0])
-
+        embed.title = title
         
         embed.description = des
         if stat_dict['rank'] != None:
