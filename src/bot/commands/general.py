@@ -109,20 +109,21 @@ async def send_character_image_url(usernames, num_weeks):
 
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
 
-    if NUM_USERS == 1:
-        character_details = get_character_details(usernames[0])
-        if character_details['found'] is not True:
-            return "The user you entered couldn't be found", None
-        
+    if NUM_USERS == 1:   
         embed = discord.Embed()
         embed.color = embed_side_color
         title = f"{character_details['name']}"
         embed.title = title
-        embed.set_thumbnail(url=character_details['image_url'])
-
+        character_details = get_character_details(usernames[0])
+        if character_details['found'] is not True:
+            embed.set_thumbnail(url='https://easydrawingguides.com/wp-content/uploads/2023/06/how-to-draw-spongebob-squarepants-featured-image-1200.png')
+            des = 'Level 999 Shadower'
+        else:
+            embed.set_thumbnail(url=character_details['image_url'])
+            des = f"Level {character_details['level'] + ' ' +  character_details['class']}"
         stat_dict = stats(get_data(), usernames[0])
 
-        des = f"Level {character_details['level'] + ' ' +  character_details['class']}"
+        
         embed.description = des
         if stat_dict['rank'] != None:
             embed.set_footer(text='Rank #' + str(stat_dict['rank']) + ' of ' + str(stat_dict['numptcp']) + ' in most recent week')

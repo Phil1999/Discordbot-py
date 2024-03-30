@@ -60,17 +60,16 @@ async def update_data():
             if name.lower() not in un_lower:
                 df[name] = '-'
                 df.loc[df['Date'] == date, name] = score
-
+        filepath = f'assets/user_data.csv'
+        df.to_csv(filepath)
         wks2.update([df.columns.values.tolist()] + df.values.tolist())
         return True
     except Exception as e:
         return False
-
+    
 def get_data():
-    gc = gspread.service_account()
-    sh = gc.open('culvert')
-    wks = sh.worksheet('Main Data')
-    df = pd.DataFrame(wks.get_all_records())
+    filepath = f'assets/user_data.csv'
+    df = pd.read_csv(filepath)
     return df
 
 def backUpData(gc):
