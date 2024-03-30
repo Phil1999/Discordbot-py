@@ -51,8 +51,20 @@ def comparison(df, users, num_weeks):
   
     # Create our dataframe
     userDF = pd.DataFrame(df.copy(), columns = ['Date'] + user_list)
-    userDF = userDF.replace('-', np.NAN)
+    min_weeks = 0
+    for i, user in enumerate(user_list):
+        if -1 in userDF[user].tolist():
+            if i == 0:
+                min_weeks = userDF[user].value_counts()[-1]
+            else:
+                temp = userDF[user].value_counts()[-1]
+                if temp < min_weeks:
+                    min_weeks = temp
+    if min_weeks != 0:
+        userDF = userDF.iloc[-(len(userDF) -min_weeks):]
+    #userDF = userDF.replace(-1, np.NAN)
     #userDF = userDF.replace(0, np.NAN)
+
     
     # If user wants last n weeks
     if num_weeks is not None:
@@ -78,8 +90,8 @@ def comparison(df, users, num_weeks):
     n_shades = 10
     diff_linewidth = 1.05
     alpha_value = 0.3 / n_shades
-    titlestr = ''
     fig, ax = plt.subplots()
+    titlestr= ' vs. '.join(user_list)
     for i, user in enumerate(user_list):
         u = userDF[user]
         # plot initial line for each user
@@ -92,13 +104,6 @@ def comparison(df, users, num_weeks):
             
         # add colour underneath line
         ax.fill_between(date, 0, u, alpha = 0.1, color = colors[i])
-
-        # determine the title
-        if (i+1) < num_users:
-            s = user + ' vs. '
-            titlestr += s
-        else:
-            titlestr += user
 
     # grid colour
     ax.grid(color='#2A3459')
@@ -120,7 +125,7 @@ def comparison(df, users, num_weeks):
 
     # set y label
     ax.set_ylabel('Score')
-    ax.set_ylim(0)
+    ax.set_ylim(-0.001)
 
     # make graph slightly wider and set title
     if num_users > 1:
@@ -156,7 +161,7 @@ def stats(df, user):
     
     scores = userDF[name].tolist()
     
-    scores = [x for x in scores if x != '-']
+    scores = [x for x in scores if x != -1]
 
     numZeros = userDF[name][userDF[name] == 0].count()
     ptcp = round((len(scores)-numZeros) / len(scores) * 100,0)
@@ -197,7 +202,7 @@ def userRank(df, user):
     # get rank this week - start by getting last row of dataset
     ranks_df = df.T.iloc[:,-1:].reset_index()
     ranks_df = ranks_df.drop([0])
-    ranks_df = ranks_df.replace('-', 0)
+    ranks_df = ranks_df.replace(-1, 0)
     mask = ranks_df.iloc[:,1] == 0
     ranks_df = ranks_df[~mask]
     num_participants = ranks_df.shape[0]

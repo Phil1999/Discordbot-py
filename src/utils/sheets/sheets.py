@@ -58,7 +58,7 @@ async def update_data():
             name = user['Name']
             score = user['Score']
             if name.lower() not in un_lower:
-                df[name] = '-'
+                df[name] = -1
                 df.loc[df['Date'] == date, name] = score
         filepath = f'assets/user_data.csv'
         df.to_csv(filepath)
@@ -69,7 +69,7 @@ async def update_data():
     
 def get_data():
     filepath = f'assets/user_data.csv'
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(filepath, index_col=0)
     return df
 
 def backUpData(gc):

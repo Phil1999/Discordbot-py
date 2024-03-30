@@ -15,7 +15,6 @@ async def floppy():
     file = discord.File(f'assets/images/floppy.gif', filename = 'floppy.gif')
     return file
 
-
 def help():
     embed = discord.Embed()
     embed.color = embed_side_color 
@@ -115,7 +114,7 @@ async def send_character_image_url(usernames, num_weeks):
         character_details = get_character_details(usernames[0])
         
         if character_details['found'] is not True:
-            embed.set_thumbnail(url='https://easydrawingguides.com/wp-content/uploads/2023/06/how-to-draw-spongebob-squarepants-featured-image-1200.png')
+            embed.set_thumbnail(url='https://cdn.freebiesupply.com/logos/large/2x/spongebob-squarepants-2-logo-png-transparent.png')
             des = 'Level 999 Shadower'
             title = usernames[0]
         else:
