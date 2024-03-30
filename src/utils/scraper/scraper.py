@@ -1,62 +1,52 @@
-import requests, re
-from bs4 import BeautifulSoup
+import requests
+import re
+from lxml import etree
 
 def get_character_details(username):
-
-    queryString = f"https://mapleranks.com/u/{username}"
-
-    url = queryString
-
+    url = f"https://mapleranks.com/u/{username}"
     response = requests.get(url)
 
     character_details = {
-        'name'              : None,
-        'image_url'         : None,
-        'level'             : None,
-        'class'             : None,
-        'found'             : False
+        'name': None,
+        'image_url': None,
+        'level': None,
+        'class': None,
+        'found': False
     }
 
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-
-        not_found_tag = soup.select_one('#content h2')
+        tree = etree.HTML(response.content)
         
-        if not_found_tag and "Not Found" in not_found_tag.text:
+        # Check for "Not Found"
+        not_found = tree.xpath("//div[@id='content']//h2[text()='Not Found']")
+        if not_found:
             return character_details
+        
+        # First, find the 'card-body' div
+        card_div = tree.xpath("//div[@class='card-body text-center'][1]")
+        if not card_div:  # If the card div doesn't exist, the character is not found
+            return character_details
+        
+        # Proceed to extract details from this card div
+        card_div = card_div[0]  # Extract the element from the list
+        
+        image_tag = card_div.xpath(".//img[@class='card-img-top']/@src")
+        name_tag = card_div.xpath(".//h3[@class='card-title text-nowrap']/text()")
+        level_class_text = card_div.xpath(".//h5[@class='card-text']/text() | .//p[@class='card-text mb-0']/text()")
         
         character_details['found'] = True
 
-        img_selector = 'img.card-img-top'
-        name_selector = 'h3.card-title'
-        level_percentage_selector = 'h5.card-text'
-        class_world_selector = 'p.card-text'
 
-        image_tag = soup.select_one(img_selector)
-        name_tag = soup.select_one(name_selector)
-        level_percentage_tag = soup.select_one(level_percentage_selector)
-        class_world_tag = soup.select_one(class_world_selector)
-    
-        # We expect the string to look something like: "Lv. 287 (14.512%) Shade in Reboot Kronos"
-        level_class_full_text = level_percentage_tag.text + " " + class_world_tag.text
-
-        match = re.match(r"Lv\. (\d+) \(([\d.]+)%\) (.+?) in (.+)", level_class_full_text)
-        
-        
         if image_tag:
-            character_details['image_url'] = image_tag['src']
-            
+            character_details['image_url'] = image_tag[0]
         if name_tag:
-            character_details['name'] = name_tag.text
-
-        if level_percentage_tag:
-            character_level = match.group(1)
-            character_details['level'] = character_level
-
-        if class_world_tag:
-            character_class = match.group(3)
-            character_details['class'] = character_class
-     
+            character_details['name'] = name_tag[0].strip()
+        if level_class_text and len(level_class_text) == 2:
+            level_percentage, class_world = level_class_text
+            full_text = f"{level_percentage} {class_world}"
+            match = re.match(r"Lv\. (\d+) \(([\d.]+)%\) (.+?) in (.+)", full_text)
+            if match:
+                character_details['level'] = match.group(1)
+                character_details['class'] = match.group(3)
 
     return character_details
-
