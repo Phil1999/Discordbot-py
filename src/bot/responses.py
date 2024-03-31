@@ -103,10 +103,19 @@ def setup_bot(bot):
         if message.author.id == 172520567163977729:
             if 'nerd' in message.content.lower():
                 await message.channel.send(message.content + ' :nerd: :point_up:')
+            elif 'osmow' in message.content.lower():
+                await message.channel.send("osmows mid" + " :yawning_face:")
         elif message.author.id == 108311639958265856:
             if all(x in message.content.lower() for x in ['hold', 'nuts']) or \
                 all(x in message.content.lower() for x in ['hold', 'nut']):
                 await message.channel.send(message.content + ' :nerd: :point_up:')
+        elif message.author.id == 467243435380965397:
+            if 'nono' in message.content.lower():
+                await message.channel.send("yes yes, stop lying")
+        elif message.author.id == 120696277104066564:
+            if 'my fault' in message.conent.lower():
+                await message.channel.send("yea ur fault")
+        
 
             
     @bot.tree.command(name='update_database', 
