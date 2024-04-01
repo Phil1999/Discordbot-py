@@ -113,7 +113,7 @@ def setup_bot(bot):
             if 'nono' in message.content.lower():
                 await message.channel.send("yes yes, stop lying")
         elif message.author.id == 120696277104066564:
-            if 'my fault' in message.conent.lower():
+            if 'my fault' in message.content.lower():
                 await message.channel.send("yea ur fault")
         
 
