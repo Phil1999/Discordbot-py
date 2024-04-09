@@ -11,7 +11,6 @@ venv/
 myenv/
 
 *.png
-*.csv
 my_proj
 
 .DS_Store

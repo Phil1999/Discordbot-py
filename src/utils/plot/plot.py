@@ -51,19 +51,26 @@ def comparison(df, users, num_weeks):
   
     # Create our dataframe
     userDF = pd.DataFrame(df.copy(), columns = ['Date'] + user_list)
-    min_weeks = 0
-    for i, user in enumerate(user_list):
-        if -1 in userDF[user].tolist():
-            if i == 0:
-                min_weeks = userDF[user].value_counts()[-1]
-            else:
-                temp = userDF[user].value_counts()[-1]
-                if temp < min_weeks:
-                    min_weeks = temp
-    if min_weeks != 0:
-        userDF = userDF.iloc[-(len(userDF) -min_weeks):]
+    # min_weeks = 0
+    # for i, user in enumerate(user_list):
+    #     if -1 in userDF[user].tolist():
+    #         if i == 0:
+    #             min_weeks = userDF[user].value_counts()[-1]
+    #         else:
+    #             temp = userDF[user].value_counts()[-1]
+    #             if temp < min_weeks:
+    #                 min_weeks = temp
+    # if min_weeks != 0:
+    #     userDF = userDF.iloc[-(len(userDF) -min_weeks):]
     #userDF = userDF.replace(-1, np.NAN)
     #userDF = userDF.replace(0, np.NAN)
+
+    # Optimized Approach
+    minus_one_counts = (userDF[user_list] == -1).sum()
+    min_weeks = minus_one_counts.min()
+
+    if min_weeks != 0:
+        userDF = userDF.iloc[-min_weeks:]
 
     
     # If user wants last n weeks
