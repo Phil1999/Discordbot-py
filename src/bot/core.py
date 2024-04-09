@@ -12,11 +12,12 @@ def init_discord_bot(token):
 
     @bot.event
     async def on_ready():
-        
         for guild_id in guild_ids:
-            await bot.tree.sync(guild=discord.Object(id=guild_id))
-        
-        print(f'{bot.user} has connected to Discord successfully')
+            try:
+                await bot.tree.sync(guild=discord.Object(id=guild_id))
+                print(f'Successfully synced commands for guild ID {guild_id}')
+            except Exception as e:
+                print(f'Failed to sync commands for guild ID {guild_id}: {e}')
 
 
     setup_bot(bot)
