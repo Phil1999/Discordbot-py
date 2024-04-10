@@ -69,7 +69,7 @@ async def update_data():
     
 def get_data():
     filepath = f'assets/user_data.csv'
-    df = pd.read_csv(filepath, index_col=0)
+    df = pd.read_csv(filepath, index_col=0g)
     return df
 
 def backUpData(gc):
@@ -84,6 +84,14 @@ def backUpData(gc):
     backup.clear()
     df = pd.DataFrame(main_dat.get_all_records())
     backup.update([df.columns.values.tolist()] + df.values.tolist())
+
+def database_to_local():
+    gc = gspread.service_account()
+    sh = gc.open('culvert')
+    wks = sh.worksheet('Main Data')
+    df = pd.DataFrame(wks.get_all_records())
+    filepath = f'assets/user_data.csv'
+    df.to_csv(filepath)
 
 async def csv_to_sheets():
     filepath = f'assets/data/data.csv'
@@ -102,7 +110,7 @@ async def csv_to_sheets():
     else:
         return False
 
-    df = pd.read_csv(filepath, header=None)
+    df = pd.read_csv(filepath, header=None, usecols=[0,1])
     df = df.rename({0:'Original', 1:'Score'}, axis = 'columns')
     df.insert(1, 'Name', "")
     
