@@ -69,7 +69,7 @@ async def update_data():
     
 def get_data():
     filepath = f'assets/user_data.csv'
-    df = pd.read_csv(filepath, index_col=0g)
+    df = pd.read_csv(filepath, index_col=0)
     return df
 
 def backUpData(gc):
