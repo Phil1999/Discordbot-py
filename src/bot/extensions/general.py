@@ -116,6 +116,22 @@ class General(commands.Cog):
             await interaction.followup.send("No permissions to run this command")
 
 
+    @app_commands.command(name='database_to_local', description='Updates local data')
+    async def database_to_local(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        
+        allowed_users= [151493263654780928, 226786266543423488, 108030919402639360]
+
+        user_id = interaction.user.id
+
+        if user_id in allowed_users:
+            response = await general.db_to_local
+
+            await interaction.followup.send(response)
+        else:
+            await interaction.followup.send("No permissions to run this command")
+
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(General(bot))
     

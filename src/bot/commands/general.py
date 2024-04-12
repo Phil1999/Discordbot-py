@@ -262,7 +262,11 @@ async def save_csv(attachment: discord.Attachment):
         else:
             return "Data update was unsuccessful."
 
+async def db_to_local():
+    
+    database_to_local()
 
+    return "Success"
 
      
 
