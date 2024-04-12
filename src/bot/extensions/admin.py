@@ -11,7 +11,7 @@ class AdminCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(name='update_database', description='Reads in a csv file which is added to the main database')  
+    @app_commands.command(name='update_database', description='Reads in a csv file which is added to the main database (ADMIN)')  
     @app_commands.describe(attachment= "Enter a csv file.")
     @app_commands.guilds(*GUILD_IDS)
     @is_admin()
@@ -25,7 +25,7 @@ class AdminCog(commands.Cog):
             await interaction.followup.send("Failed to process command.", ephemeral=True)
 
 
-    @app_commands.command(name='database_to_local', description='Updates local data')
+    @app_commands.command(name='database_to_local', description='Updates local data (ADMIN)')
     @app_commands.guilds(*GUILD_IDS)
     @is_admin()
     async def database_to_local(self, interaction: discord.Interaction):
