@@ -5,12 +5,14 @@ import os
 from ..commands import general
 
 
+guild_ids = [1212500695719223367, 771514804895744021]
 
 class General(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @app_commands.command(name='floppy', description=':susge:')
+    @app_commands.guilds(*guild_ids)
     async def floppy(self, interaction: discord.Interaction):
         await interaction.response.defer()
 
@@ -18,7 +20,8 @@ class General(commands.Cog):
         await interaction.followup.send(file=file)
 
     @app_commands.command(name='help', description='Shows a list of commands')
-    async def hello(self, interaction: discord.Interaction):
+    @app_commands.guilds(*guild_ids)
+    async def help(self, interaction: discord.Interaction):
         embed = general.help()
         await interaction.response.send_message(embed=embed)
       
@@ -26,6 +29,7 @@ class General(commands.Cog):
     @app_commands.command(name='gpq', description="Check Culvert Scores")
     @app_commands.describe(users='List of users to query (max=4).', num_weeks='Optional: The last (num) weeks of scores')
     @app_commands.choices(num_weeks=[])
+    @app_commands.guilds(*guild_ids)
     async def gpq(self, interaction: discord.Interaction, users: str, num_weeks: int = None):
         try:  
             await interaction.response.defer()
@@ -66,6 +70,7 @@ class General(commands.Cog):
 
     @app_commands.command(name='converttime', description='Converts time to a Discord timestamp. see /help for more info.') 
     @app_commands.describe(timestamp="Enter a time or 'now' for the current time. Default timezone: UTC", timezone="Enter a timezone (e.g. PST or America/Los_Angeles)")
+    @app_commands.guilds(*guild_ids)
     async def convert_time(self, interaction: discord.Interaction, timestamp: str, timezone: str=None):
          
         try:
@@ -101,6 +106,7 @@ class General(commands.Cog):
 
     @app_commands.command(name='update_database', description='Reads in a csv file which is added to the main database')  
     @app_commands.describe(attachment= "Enter a csv file.")
+    @app_commands.guilds(*guild_ids)
     async def read_csv_data(self, interaction: discord.Interaction, attachment: discord.Attachment):
         await interaction.response.defer()            
         allowed_users= [151493263654780928, 226786266543423488, 108030919402639360]
@@ -117,6 +123,7 @@ class General(commands.Cog):
 
 
     @app_commands.command(name='database_to_local', description='Updates local data')
+    @app_commands.guilds(*guild_ids) # This is how we can get commands to sync immediately
     async def database_to_local(self, interaction: discord.Interaction):
         await interaction.response.defer()
         
@@ -125,12 +132,13 @@ class General(commands.Cog):
         user_id = interaction.user.id
 
         if user_id in allowed_users:
-            response = await general.db_to_local
+            response = await general.db_to_local()
 
             await interaction.followup.send(response)
         else:
             await interaction.followup.send("No permissions to run this command")
 
+ 
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(General(bot))
