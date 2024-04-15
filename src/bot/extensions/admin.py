@@ -18,7 +18,7 @@ class AdminCog(commands.Cog):
     async def read_csv_data(self, interaction: discord.Interaction, attachment: discord.Attachment):
         try:
             await interaction.response.defer()            
-            response = await admin.save_csv(attachment)
+            response = await admin.update_db(attachment)
             await interaction.followup.send(response)
         except Exception as e:
             print(f"Error processing command: {e}")
