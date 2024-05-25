@@ -14,3 +14,5 @@ myenv/
 my_proj
 
 .DS_Store
+
+*.csv

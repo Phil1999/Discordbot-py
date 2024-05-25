@@ -23,8 +23,8 @@ class GeneralCog(commands.Cog):
     async def total_guild_graph(self, interaction: discord.Interaction):
         try:  
             await interaction.response.defer()
-            file = await general.total_score_graph()
-            await interaction.followup.send(file=file)
+            result, file = await general.total_score_graph()
+            await interaction.followup.send(file=file, embed=result)
         except Exception as e:
                 command_name = interaction.data['name']
                 params = {option['name']: option['value'] for option in interaction.data['options']}
@@ -40,6 +40,7 @@ class GeneralCog(commands.Cog):
 
                 error_msg = "Sorry, something went wrong." 
                 await interaction.followup.send(error_msg, ephemeral=True)
+
     @app_commands.command(name='gpq', description="Check Culvert Scores")
     @app_commands.describe(users='List of users to query (max=4).', num_weeks='Optional: The last (num) weeks of scores')
     @app_commands.choices(num_weeks=[])

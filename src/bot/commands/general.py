@@ -136,9 +136,21 @@ async def send_character_image_url(usernames, num_weeks):
         return None, file
 
 async def total_score_graph():
-    guildTotal(get_data())
+    scores = guildTotal(get_data())
+    last5scores = scores[-5:][::-1]
+    last5scores = [f'{x:,}' for x in last5scores]
+    last5scores = ' | '.join(last5scores)
+    maxscore = f"{max(scores):,}"
     file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
-    return file
+
+    embed = discord.Embed()
+    embed.color = embed_side_color
+    embed.title = "Come GPQ"
+    embed.add_field(name = 'Personal Best:', value = maxscore, inline = False)
+    embed.add_field(name = 'Last 5 Weeks:', value = last5scores, inline = False)
+    embed.set_image(url = 'attachment://graph.png')
+    
+    return embed, file
 
 timezone_mapping = {
     'PST': 'America/Los_Angeles',  # Pacific Standard Time

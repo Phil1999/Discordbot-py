@@ -287,3 +287,4 @@ def guildTotal(df):
         
     plt.savefig(f'{imgdir}/graph.png')
     plt.close(fig)
+    return totals
