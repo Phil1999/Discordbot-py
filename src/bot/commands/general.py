@@ -112,7 +112,7 @@ async def send_character_image_url(usernames, num_weeks):
         
         if character_details['found'] is not True:
             embed.set_thumbnail(url='https://cdn.freebiesupply.com/logos/large/2x/spongebob-squarepants-2-logo-png-transparent.png')
-            des = 'Level 999 Shadower'
+            des = 'Level 999 Bhenchod'
             title = usernames[0]
         else:
             embed.set_thumbnail(url=character_details['image_url'])
@@ -135,6 +135,10 @@ async def send_character_image_url(usernames, num_weeks):
     else:
         return None, file
 
+async def total_score_graph():
+    guildTotal(get_data())
+    file = discord.File(f'assets/images/graph.png', filename = 'graph.png')
+    return file
 
 timezone_mapping = {
     'PST': 'America/Los_Angeles',  # Pacific Standard Time

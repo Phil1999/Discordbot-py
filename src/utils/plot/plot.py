@@ -141,7 +141,7 @@ def comparison(df, users, num_weeks):
     else:
         fig.set_figwidth(7.5)
         ax.set_title('GPQ Scores', fontsize = 14)
-
+    ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
     # save graph
     imgdir = 'assets/images'
     if not os.path.exists(imgdir):
@@ -221,3 +221,69 @@ def userRank(df, user):
         rank = None
     return(rank, num_participants)
 
+def guildTotal(df):
+    xtick = xLabelTicks(df)
+    df = df.set_index('Date')
+    
+    df.loc[:,'Total'] = df.astype(int).sum(axis=1)
+    df = df.replace(-1, 0)
+
+    date = df.index.to_list()
+    totals = df['Total'].to_list()
+
+    plt.style.use("dark_background")
+    for param in ['text.color', 'axes.labelcolor', 'xtick.color', 'ytick.color']:
+        plt.rcParams[param] = '0.9'  # very light grey
+    for param in ['figure.facecolor', 'axes.facecolor', 'savefig.facecolor']:
+        plt.rcParams[param] = '#212946'  # bluish dark grey
+
+    col = '#FFA500'
+
+    n_shades = 10
+    diff_linewidth = 1.05
+    alpha_value = 0.3 / n_shades
+    fig, ax = plt.subplots()
+
+    # plot initial line for each user
+    ax.plot(date, totals, color = col, marker = 'o', linewidth = 1.7)
+
+    # add glow effect to each line
+    for n in range(1, n_shades+1):
+        ax.plot(date, totals, color = col, linewidth=2+(diff_linewidth*n),
+                alpha = alpha_value)
+        
+    # add colour underneath line
+    ax.fill_between(date, 0, totals, alpha = 0.1, color = col)
+
+    # grid colour
+    ax.grid(color='#2A3459')
+
+    # Border (spines) set to invisible
+    spines = False
+    ax.spines['top'].set_visible(spines)
+    ax.spines['bottom'].set_visible(spines)
+    ax.spines['left'].set_visible(spines)
+    ax.spines['right'].set_visible(spines)
+
+    # set x tick labels
+    ax.set_xticks(xtick)
+    ax.set_xticklabels(xtick, rotation = 30, fontsize = 13)
+
+    plt.yticks(fontsize = 13)
+
+    # set y label
+    ax.set_ylabel('Score')
+    ax.set_ylim(-0.001)
+
+    fig.set_figwidth(9)
+    ax.set_title('Guild Aggregated GPQ Scores', fontsize = 14)
+
+    ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
+    ## save graph
+    imgdir = 'assets/images'
+    if not os.path.exists(imgdir):
+        os.makedirs(imgdir)
+    plt.tight_layout()
+        
+    plt.savefig(f'{imgdir}/graph.png')
+    plt.close(fig)

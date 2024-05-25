@@ -18,7 +18,28 @@ class GeneralCog(commands.Cog):
         embed = general.help()
         await interaction.response.send_message(embed=embed)
       
-    
+    @app_commands.command(name='guild_gpq', description='See the total guild scores')
+    @app_commands.guilds(*GUILD_IDS)
+    async def total_guild_graph(self, interaction: discord.Interaction):
+        try:  
+            await interaction.response.defer()
+            file = await general.total_score_graph()
+            await interaction.followup.send(file=file)
+        except Exception as e:
+                command_name = interaction.data['name']
+                params = {option['name']: option['value'] for option in interaction.data['options']}
+
+                # Convert params dictionary to a string representation
+                params_str = ', '.join(f'{key}={value}' for key, value in params.items()) 
+                invoking_command = f"Invoked Command: {command_name}, with params - {params_str} \n" 
+                
+                print(invoking_command)
+
+                traceback_str = traceback.format_exc()    
+                print(traceback_str)
+
+                error_msg = "Sorry, something went wrong." 
+                await interaction.followup.send(error_msg, ephemeral=True)
     @app_commands.command(name='gpq', description="Check Culvert Scores")
     @app_commands.describe(users='List of users to query (max=4).', num_weeks='Optional: The last (num) weeks of scores')
     @app_commands.choices(num_weeks=[])
@@ -121,4 +142,3 @@ class GeneralCog(commands.Cog):
 async def setup(bot: commands.Bot):
     await bot.add_cog(GeneralCog(bot))
     
-

@@ -118,6 +118,7 @@ async def csv_to_sheets():
 
     try:
         dat = sh.worksheet(s)
+        dat.clear()
     except gspread.exceptions.WorksheetNotFound:
         dat = sh.add_worksheet(title=s, rows = 100, cols = 100)
     dat.update([df.columns.values.tolist()] + df.values.tolist())
