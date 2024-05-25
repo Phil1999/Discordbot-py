@@ -1,5 +1,5 @@
 import discord, re
-from utils.scraper import get_character_details
+from utils.scraper import get_character_details, get_top_culv_channel
 from utils.plot import *
 from utils.sheets import *
 from datetime import datetime, timedelta
@@ -229,8 +229,11 @@ async def get_discord_timestamp(timestamp_str, timezone_str):
         return "Sorry, we had trouble figuring out what you meant. Please try again.", None
 
 
+# Returns the name of the top culvert channel
+async def get_culvert_channel():
 
-
+    top_channel = get_top_culv_channel();
+    return top_channel
 
 
      

@@ -57,3 +57,40 @@ def get_character_details(username):
 
 
     return character_details
+
+
+def scrape_culvert_channels():
+    url = f'https://maplestatus.info/api/games/maplestory/global/kronos'
+
+    response = requests.get(url)
+
+    # We expect to get a JSON
+    if response.status_code == 200:
+        data = response.json()
+        return data
+
+    return None
+
+
+def get_top_culv_channel():
+    NUM_CHANNELS = 5 
+    data = scrape_culvert_channels()
+
+    if data is None:
+        return 'Something went wrong getting channel data'
+
+    
+    channels = []
+
+    for channel in data['data']:
+        if channel.get('status') == 1:
+            name = channel.get('name')
+            if not name.startswith('Private') and name != 'Cash Shop':
+                latency = channel['latency']['now']['value']
+                name = name.replace('Channel', 'ch')
+                channels.append((name, latency))
+    
+    top_channels = sorted(channels, key=lambda x: x[1], reverse=True)[:NUM_CHANNELS]
+
+
+    return top_channels

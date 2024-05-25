@@ -1,3 +1,4 @@
+from sre_compile import isstring
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -95,6 +96,26 @@ class GeneralCog(commands.Cog):
 
 
              
+    @app_commands.command(name='cc', description="Shows the top 5 channels for culvert.")
+    @app_commands.guilds(*GUILD_IDS)
+    async def get_culvert_channel(self, interaction: discord.Interaction):
+            try:
+                await interaction.response.defer()
+
+                result = await general.get_culvert_channel()
+               
+                # error occured
+                if isinstance(result, str):
+                    await interaction.followup.send(result)
+                
+                channels_string = ''
+                for channel_name, latency in result:
+                    channels_string += f'{channel_name} - {latency} ms\n'
+
+                await interaction.followup.send(f'The top channels for culvert are:\n{channels_string}')
+            except Exception as e:
+                print(e) 
+                await interaction.followup.send("Something went wrong getting channel data", ephemeral=True)
  
 
 async def setup(bot: commands.Bot):
