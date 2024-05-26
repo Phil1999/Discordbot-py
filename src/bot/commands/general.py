@@ -112,7 +112,7 @@ async def send_character_image_url(usernames, num_weeks):
         
         if character_details['found'] is not True:
             embed.set_thumbnail(url='https://cdn.freebiesupply.com/logos/large/2x/spongebob-squarepants-2-logo-png-transparent.png')
-            des = 'Level 999 Bhenchod'
+            des = 'Level 999 Schulicher'
             title = usernames[0]
         else:
             embed.set_thumbnail(url=character_details['image_url'])
