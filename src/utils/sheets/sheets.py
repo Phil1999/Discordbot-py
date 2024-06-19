@@ -128,7 +128,7 @@ async def csv_to_sheets():
     for index, cell in enumerate(cell_list):
         index += 2
         cell.value = "=IFNA(vlookup(A" + f"{index}" \
-            + ",'OCR Mappings'!$A$1:$B$50,2,False),A" + f"{index}" + ")"
+            + ",'OCR Mappings'!$A$1:$B$1000,2,False),A" + f"{index}" + ")"
     dat.update_cells(cell_list, value_input_option='user_entered')
 
     # Delete the first column and replace formula with actual string value
