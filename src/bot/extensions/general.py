@@ -5,7 +5,7 @@ from discord import app_commands
 import os
 from ..commands import general
 from utils.vars import GUILD_IDS, ADMIN_IDS
-
+import traceback
 
 class GeneralCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
